@@ -63,6 +63,10 @@ public class Person {
     @Column(name = "email", length = 100)
     private String email;
 
+    @Size(max = 30, message = "Username cannot exceed 30 characters.")
+    @Column(name = "username", length = 100)
+    private String username;
+
 
     // Data Persist
     @NotNull(message = "It must be specified whether the user is active or not")
