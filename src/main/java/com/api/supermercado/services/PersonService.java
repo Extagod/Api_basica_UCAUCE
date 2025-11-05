@@ -6,4 +6,4 @@ import com.api.supermercado.dtos.PersonPageFullResponseDto;
 import java.util.List;
 
 public interface PersonService {
-    List<PersonPageFullResponseDto> findAllAvalavailablePersons(Integer lastPersonId, Integer size);}
+    List<PersonPageFullResponseDto> findAllAvailablePersons(Integer lastPersonId, Integer size);}

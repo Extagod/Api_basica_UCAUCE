@@ -9,6 +9,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProductRequestMapper {
+
     ProductRequestMapper INSTANCE = Mappers.getMapper(ProductRequestMapper.class);
 
     @Mapping(source = "nameProduct", target = "nameProduct")
@@ -19,8 +20,6 @@ public interface ProductRequestMapper {
     @Mapping(source = "supplierId", target = "supplierId")
     @Mapping(source = "barCode", target = "barCode")
     @Mapping(source = "activeProduct", target ="activeProduct")
-    @Mapping(source = "created_at", target = "created_at")
-    @Mapping(source = "updated_at", target= "updated_at")
     Product toEntity(ProductRequestDto dto);
 
 
@@ -32,13 +31,12 @@ public interface ProductRequestMapper {
     @Mapping(source = "supplierId", target = "supplierId")
     @Mapping(source = "barCode", target = "barCode")
     @Mapping(source = "activeProduct", target ="activeProduct")
-    @Mapping(source = "created_at", target = "created_at")
-    @Mapping(source = "updated_at", target= "updated_at")
     ProductRequestDto toDto(Product entity);
 
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "categoryId", target = "categoryId")
     @Mapping(source = "supplierId", target = "supplierId")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateProductFromDto(ProductRequestDto dto, @MappingTarget Product product);
 
 }

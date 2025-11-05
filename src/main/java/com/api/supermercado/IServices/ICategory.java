@@ -2,6 +2,8 @@ package com.api.supermercado.IServices;
 
 import com.api.supermercado.dtos.CategoryFullResponseDto;
 import com.api.supermercado.dtos.CategoryRequestDto;
+import com.api.supermercado.dtos.ProductPageResponseDto;
+import com.api.supermercado.dtos.ProductRequestDto;
 import com.api.supermercado.entities.Category;
 import com.api.supermercado.entities.Product;
 import com.api.supermercado.exceptions.CategoryException;
@@ -11,40 +13,23 @@ import com.api.supermercado.exceptions.ProductExceptions;
 import com.api.supermercado.mappers.ProductRequestMapper;
 import com.api.supermercado.repositories.CategoryRepository;
 import com.api.supermercado.services.CategoryService;
+import jakarta.persistence.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 
 @Service
 public class ICategory implements CategoryService {
 
-
-
-    @Autowired
     private final CategoryRepository categoryRepository;
 
     public ICategory(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
-
-
-    @Override
-
-    public void addCategory(CategoryRequestDto categoryRequestDto) {
-        boolean exists = categoryRepository.existsCategoryBynameCategory(categoryRequestDto.getNameCategory());
-        if (exists) {
-            throw new CategoryException(CategoryExceptions.DUPLICATE_CATEGORY);
-        }
-        Category category = new Category();
-
-        category.setNameCategory(categoryRequestDto.getNameCategory());
-        category.setDescriptionCategory(category.getDescriptionCategory());
-        category.setIs_active(categoryRequestDto.getIsActive());
-
-        categoryRepository.save(category);
-    }
-
 
     @Override
     public List<CategoryFullResponseDto> findAllCategoriesActives(Integer lastId, Integer size) {
@@ -54,4 +39,106 @@ public class ICategory implements CategoryService {
         return categoryRepository.findActiveCategories(lastId, size);
     }
 
+    @Override
+    public List<CategoryFullResponseDto> findAllInactiveCategories(Integer lastId, Integer size) {
+        if (lastId == null) lastId = 0;
+        if (size == null || size <= 0) size = 10;
+
+        return categoryRepository.findAllInactiveCategories(lastId, size);
+    }
+
+    @Override
+    public void createCategory(CategoryRequestDto dto) {
+        try {
+            if (dto == null)
+                throw new CategoryException(CategoryExceptions.INVALID_CATEGORY_DATA);
+
+            if (categoryRepository.existsCategoryBynameCategory(dto.nameCategory())) {
+                throw new CategoryException(CategoryExceptions.DUPLICATE_CATEGORY);
+            }
+
+            Category category = new Category();
+            category.setNameCategory(dto.nameCategory());
+            category.setDescriptionCategory(dto.descriptionCategory());
+            category.setIs_active(true);
+
+            categoryRepository.save(category);
+
+        } catch (CategoryException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CategoryException(CategoryExceptions.DATABASE_ERROR, e.getMessage());
+        }
+    }
+
+
+
+    @Override
+    public Optional<Category> UpdateCategory(String nameCategory, CategoryRequestDto dto) {
+        try {
+            if (nameCategory == null || nameCategory.isBlank()) {
+                throw new CategoryException(CategoryExceptions.INVALID_CATEGORY_DATA);
+            }
+
+            // 1️⃣ Buscar la categoría existente
+            Category category = categoryRepository.findByNameCategory(nameCategory)
+                    .orElseThrow(() -> new CategoryException(CategoryExceptions.CATEGORY_NOT_FOUND));
+
+            // 2️⃣ Si cambia el nombre, verificar duplicado
+            if (!category.getNameCategory().equalsIgnoreCase(dto.nameCategory())) {
+                boolean duplicateExists = categoryRepository.existsCategoryBynameCategory(dto.nameCategory());
+                if (duplicateExists) {
+                    throw new CategoryException(CategoryExceptions.DUPLICATE_CATEGORY);
+                }
+            }
+
+            // 3️⃣ Aplicar cambios
+            category.setNameCategory(dto.nameCategory());
+            category.setDescriptionCategory(dto.descriptionCategory());
+            category.setIs_active(dto.isActive());
+
+            // 4️⃣ Guardar cambios
+            Category updatedCategory = categoryRepository.save(category);
+
+            return Optional.of(updatedCategory);
+
+        } catch (CategoryException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CategoryException(CategoryExceptions.DATABASE_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteCategory(String nameCategory) {
+        try {
+            if (nameCategory == null || nameCategory.isBlank()) {
+                throw new CategoryException(CategoryExceptions.INVALID_CATEGORY_DATA);
+            }
+
+            // Buscar categoría
+            Category category = categoryRepository.findByNameCategory(nameCategory)
+                    .orElseThrow(() -> new CategoryException(CategoryExceptions.CATEGORY_NOT_FOUND));
+
+            // Borrado lógico
+            category.setIs_active(false);
+
+            categoryRepository.save(category);
+
+        } catch (CategoryException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CategoryException(CategoryExceptions.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public Optional<Category> getCategoryByName(String nameCategory) {
+        if (nameCategory == null || nameCategory.isBlank())
+            throw new ProductException(ProductExceptions.INVALID_PRODUCT_DATA);
+
+        return categoryRepository.findByNameCategory(nameCategory)
+                .stream()
+                .findFirst();
+    }
 }

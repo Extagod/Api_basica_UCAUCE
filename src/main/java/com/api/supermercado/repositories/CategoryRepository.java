@@ -35,5 +35,27 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
             @Param("lastCategoryId") Integer lastCategoryId,
             @Param("pageSize") Integer pageSize
     );
+
+
+    @Query(value = """
+
+            SELECT 
+            c.category_id AS categoryId,
+            c.name_category AS nameCategory,
+            c.description_category AS descriptionCategory,
+            c.is_active AS is_active
+        FROM category c
+        WHERE c.is_active = false
+          AND c.category_id > :lastCategoryId
+        ORDER BY c.category_id
+        LIMIT :pageSize
+        """,
+            nativeQuery = true)
+    List<CategoryFullResponseDto> findAllInactiveCategories(
+            @Param("lastCategoryId") Integer lastCategoryId,
+            @Param("pageSize") Integer pageSize
+    );
+
+    Optional<Category> findByNameCategory(String nameCategory);
 }
 

@@ -23,7 +23,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             p.stock AS stock,
             p.bar_code AS barCode,
             c.category_id AS categoryId,
-            c.name AS categoryName,
+            c.name_category AS categoryName,
             s.supplier_id AS supplierId,
             s.company_name AS supplierName,
             s.created_at AS created_at,
@@ -39,42 +39,40 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
         LIMIT :pageSize
         """,
             nativeQuery = true)
-    List<ProductPageResponseDto> findProductsPage(
+    List<ProductPageResponseDto> allActiveProducts(
             @Param("lastProductId") Integer lastProductId,
             @Param("pageSize") Integer pageSize
     );
     boolean existsByBarCode(String barCode);
 
     @Query(value = """
-        SELECT 
-            p.product_id AS productId,
-            p.name AS productName,
-            p.description AS productDescription,
-            p.active_product AS activeProduct,
-            p.price AS price,
-            p.stock AS stock,
-            p.barcode AS barCode,
-            c.category_id AS categoryId,
-            c.name AS categoryName,
-            s.supplier_id AS supplierId,
-            s.company_name AS supplierName
-            s.created_at AS created_at,
-            s.updated_at AS updated_at
-        FROM product p
-        JOIN category c 
-            ON p.category_id = c.category_id
-        JOIN supplier s 
-            ON p.supplier_id = s.supplier_id
-        WHERE 
-            (:barCode IS NULL OR p.barcode = :barCode)
-            AND p.product_id > :lastProductId
-        ORDER BY p.product_id
-        LIMIT :pageSize
-        """,
+    SELECT 
+        p.product_id AS productId,
+        p.name AS productName,
+        p.description AS productDescription,
+        p.active_product AS activeProduct,
+        p.price AS price,
+        p.stock AS stock,
+        p.bar_code AS barCode,
+        c.category_id AS categoryId,
+        c.name_category AS categoryName,
+        s.supplier_id AS supplierId,
+        s.company_name AS supplierName,
+        s.created_at AS created_at,
+        s.updated_at AS updated_at
+    FROM product p
+    JOIN category c 
+        ON p.category_id = c.category_id
+    JOIN supplier s 
+        ON p.supplier_id = s.supplier_id
+    WHERE 
+        (:barCode IS NULL OR p.bar_code = :barCode)
+        AND p.product_id > :lastProductId
+    ORDER BY p.product_id
+    LIMIT :pageSize
+    """,
             nativeQuery = true)
     Optional<ProductPageResponseDto> findProductsPagebyBarcode(
-            @Param("lastProductId") Integer lastProductId,
-            @Param("pageSize") Integer pageSize,
             @Param("barCode") String barCode
     );
 
@@ -91,7 +89,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
         p.stock AS stock,
         p.bar_code AS barCode,
         c.category_id AS categoryId,
-        c.name AS categoryName,
+        c.name_category AS categoryName,
         s.supplier_id AS supplierId,
         s.company_name AS supplierName,
         s.created_at AS created_at,

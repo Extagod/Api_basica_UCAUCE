@@ -1,5 +1,7 @@
 package com.api.supermercado.controller;
 
+import com.api.supermercado.dtos.ApiResponse;
+import com.api.supermercado.dtos.PersonPageFullResponseDto;
 import com.api.supermercado.repositories.PersonRepository;
 import com.api.supermercado.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,20 +11,42 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
-@RequestMapping("api")
+@RequestMapping("/api/persons")
 public class PersonController {
 
 
     @Autowired
     private PersonService personService;
 
-    @GetMapping("/persons")
-    public ResponseEntity <?> findAllPersons(
+    @GetMapping("/AllAvalavailablePersons")
+    public ResponseEntity<?> findAllPersons(
             @RequestParam(defaultValue = "0") Integer lastId,
-            @RequestParam(defaultValue = "10") Integer size){
-        return ResponseEntity.ok(personService.findAllAvalavailablePersons(lastId, size));
+            @RequestParam(defaultValue = "10") Integer size) {
+
+        List<PersonPageFullResponseDto> listPersons = personService.findAllAvailablePersons(lastId, size);
 
 
+        if (listPersons.isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(
+                            "The list of active users is empty.",
+                            0,
+                            List.of()
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        "The list of people obtained correctly",
+                        listPersons.size(),
+                        listPersons
+
+                )
+        );
     }
 }

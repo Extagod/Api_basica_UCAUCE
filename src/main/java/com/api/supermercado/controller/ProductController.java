@@ -1,43 +1,77 @@
 package com.api.supermercado.controller;
 
+import com.api.supermercado.dtos.ApiResponse;
+import com.api.supermercado.dtos.ProductPageResponseDto;
 import com.api.supermercado.dtos.ProductRequestDto;
 import com.api.supermercado.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/products")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/products")
-    public ResponseEntity<?> getProducts(
+    @GetMapping("/allAvailableProducts")
+    public ResponseEntity<?> getAllAvailableProducts(
             @RequestParam(defaultValue = "0") Integer lastId,
             @RequestParam(defaultValue = "10") Integer size) {
 
-        return ResponseEntity.ok(productService.getProductsPaginated(lastId, size));
+        List<ProductPageResponseDto> products = productService.allActiveProducts(lastId, size);
+
+        if (products.isEmpty()) {
+            return ResponseEntity.ok().body(
+                    new ApiResponse<>(
+                            "The list of active products is empty.",
+                            0,
+                            List.of()
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        "The list of active products was obtained successfully.",
+                        products.size(),
+                        products
+                )
+        );
     }
 
-    @GetMapping("/search")
+    // ✅ Search by barcode with validation and standardized response
+    @GetMapping("/searchByBarCode")
     public ResponseEntity<?> getProduct(
-            @RequestParam(required = false) Integer lastId,
-            @RequestParam(required = false) Integer size,
-            @RequestParam(required = true) String barCode) {
 
-        int last = (lastId == null) ? 0 : lastId;
-        int pageSize = (size == null) ? 10 : size;
+            @RequestParam String barCode) {
 
-        return productService.getProduct(last, pageSize, barCode)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return productService.getProduct(barCode)
+                .map(product ->
+                        ResponseEntity.ok(
+                                new ApiResponse<>(
+                                        "Product obtained successfully.",
+                                        1,
+                                        product
+                                )
+                        )
+                )
+                .orElseGet(() ->
+                        ResponseEntity.ok().body(
+                                new ApiResponse<>(
+                                        "No product found with the given barcode.",
+                                        0,
+                                        null
+                                )
+                        )
+                );
     }
 
-    @PostMapping("/add")
+    @PostMapping("/Add")
     public ResponseEntity<?> addProduct(@RequestBody ProductRequestDto productRequestDto) {
         productService.addProduct(productRequestDto);
         return ResponseEntity.ok(Map.of(
@@ -53,12 +87,31 @@ public class ProductController {
         ));
     }
 
+    // ✅ Get unavailable products with validation and ApiResponse
     @GetMapping("/unavailableProducts")
-    public ResponseEntity<?> getAvailableProducts(
+    public ResponseEntity<?> getUnavailableProducts(
             @RequestParam(defaultValue = "0") Integer lastId,
             @RequestParam(defaultValue = "10") Integer size) {
 
-        return ResponseEntity.ok(productService.findProductsDisabled(lastId, size));
+        List<ProductPageResponseDto> products = productService.findProductsDisabled(lastId, size);
+
+        if (products.isEmpty()) {
+            return ResponseEntity.ok().body(
+                    new ApiResponse<>(
+                            "There are no inactive products registered.",
+                            0,
+                            List.of()
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        "Inactive products obtained successfully.",
+                        products.size(),
+                        products
+                )
+        );
     }
 
     @PutMapping("/update")
@@ -73,5 +126,4 @@ public class ProductController {
                 )))
                 .orElse(ResponseEntity.notFound().build());
     }
-
 }

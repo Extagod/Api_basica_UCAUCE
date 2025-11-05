@@ -9,22 +9,17 @@ import lombok.Getter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 
-public class ProductRequestDto {
+public record ProductRequestDto(
+        String nameProduct,
+        String descriptionProduct,
+        Integer stockProduct,
+        BigDecimal priceProduct,
+        Integer categoryId,
+        Integer supplierId,
+        String barCode,
+        Boolean activeProduct
+) {}
 
-    private String nameProduct;
-    private String descriptionProduct;
-    private Integer stockProduct;
-    private BigDecimal priceProduct;
-    private Integer categoryId;
-    private Integer supplierId;
-    private String barCode;
-    private  boolean activeProduct;
-    private LocalDateTime updated_at;
-    private LocalDateTime created_at;
-
-
-}
