@@ -1,4 +1,4 @@
-package com.api.supermercado.IServices;
+package com.api.supermercado.servicesImplementation;
 
 import com.api.supermercado.dtos.ProductPageResponseDto;
 import com.api.supermercado.dtos.ProductRequestDto;
@@ -8,8 +8,6 @@ import com.api.supermercado.exceptions.ProductExceptions;
 import com.api.supermercado.mappers.ProductRequestMapper;
 import com.api.supermercado.repositories.ProductRepository;
 import com.api.supermercado.services.ProductService;
-import jakarta.persistence.PersistenceException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +59,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(String barCode) {
+
+
+        if(barCode == null || barCode.isBlank()){
+            throw new ProductException(ProductExceptions.INVALID_PRODUCT_DATA);
+        }
+
         Product product = productRepository.findByBarCode(barCode)
                 .orElseThrow(() -> new ProductException(ProductExceptions.PRODUCT_NOT_FOUND));
 
@@ -77,16 +81,26 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Optional<Product> UpdateProduct(String barCode, ProductRequestDto dto) {
-        if (barCode == null || barCode.isBlank())
+
+        if (barCode == null || barCode.isBlank()) {
             throw new ProductException(ProductExceptions.INVALID_PRODUCT_DATA);
+        }
 
         Product existingProduct = productRepository.findByBarCode(barCode)
                 .orElseThrow(() -> new ProductException(ProductExceptions.PRODUCT_NOT_FOUND));
 
+        if (!existingProduct.getBarCode().equalsIgnoreCase(dto.barCode())
+                && productRepository.existsByBarCode(dto.barCode())) {
+            throw new ProductException(ProductExceptions.DUPLICATE_PRODUCT);
+        }
+
         productRequestMapper.updateProductFromDto(dto, existingProduct);
 
-        return Optional.of(productRepository.save(existingProduct));
+        Product updated = productRepository.save(existingProduct);
+
+        return Optional.of(updated);
     }
+
 
 
 }

@@ -1,21 +1,14 @@
-package com.api.supermercado.IServices;
+package com.api.supermercado.servicesImplementation;
 
 import com.api.supermercado.dtos.CategoryFullResponseDto;
 import com.api.supermercado.dtos.CategoryRequestDto;
-import com.api.supermercado.dtos.ProductPageResponseDto;
-import com.api.supermercado.dtos.ProductRequestDto;
 import com.api.supermercado.entities.Category;
-import com.api.supermercado.entities.Product;
 import com.api.supermercado.exceptions.CategoryException;
 import com.api.supermercado.exceptions.CategoryExceptions;
 import com.api.supermercado.exceptions.ProductException;
 import com.api.supermercado.exceptions.ProductExceptions;
-import com.api.supermercado.mappers.ProductRequestMapper;
 import com.api.supermercado.repositories.CategoryRepository;
 import com.api.supermercado.services.CategoryService;
-import jakarta.persistence.PersistenceException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,11 +16,11 @@ import java.util.Optional;
 
 
 @Service
-public class ICategory implements CategoryService {
+public class CategoryImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public ICategory(CategoryRepository categoryRepository) {
+    public CategoryImpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
 
@@ -80,11 +73,9 @@ public class ICategory implements CategoryService {
                 throw new CategoryException(CategoryExceptions.INVALID_CATEGORY_DATA);
             }
 
-            // 1️⃣ Buscar la categoría existente
             Category category = categoryRepository.findByNameCategory(nameCategory)
                     .orElseThrow(() -> new CategoryException(CategoryExceptions.CATEGORY_NOT_FOUND));
 
-            // 2️⃣ Si cambia el nombre, verificar duplicado
             if (!category.getNameCategory().equalsIgnoreCase(dto.nameCategory())) {
                 boolean duplicateExists = categoryRepository.existsCategoryBynameCategory(dto.nameCategory());
                 if (duplicateExists) {
@@ -92,12 +83,12 @@ public class ICategory implements CategoryService {
                 }
             }
 
-            // 3️⃣ Aplicar cambios
+
             category.setNameCategory(dto.nameCategory());
             category.setDescriptionCategory(dto.descriptionCategory());
             category.setIs_active(dto.isActive());
 
-            // 4️⃣ Guardar cambios
+
             Category updatedCategory = categoryRepository.save(category);
 
             return Optional.of(updatedCategory);
@@ -116,11 +107,9 @@ public class ICategory implements CategoryService {
                 throw new CategoryException(CategoryExceptions.INVALID_CATEGORY_DATA);
             }
 
-            // Buscar categoría
             Category category = categoryRepository.findByNameCategory(nameCategory)
                     .orElseThrow(() -> new CategoryException(CategoryExceptions.CATEGORY_NOT_FOUND));
 
-            // Borrado lógico
             category.setIs_active(false);
 
             categoryRepository.save(category);

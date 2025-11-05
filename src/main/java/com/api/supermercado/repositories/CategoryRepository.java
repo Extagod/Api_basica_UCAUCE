@@ -1,7 +1,6 @@
 package com.api.supermercado.repositories;
 
 import com.api.supermercado.dtos.CategoryFullResponseDto;
-import com.api.supermercado.dtos.CategoryRequestDto;
 import com.api.supermercado.entities.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

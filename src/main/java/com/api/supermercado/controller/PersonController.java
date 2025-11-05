@@ -2,7 +2,6 @@ package com.api.supermercado.controller;
 
 import com.api.supermercado.dtos.ApiResponse;
 import com.api.supermercado.dtos.PersonPageFullResponseDto;
-import com.api.supermercado.repositories.PersonRepository;
 import com.api.supermercado.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,19 +9,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/persons")
 public class PersonController {
 
 
-    @Autowired
-    private PersonService personService;
+    private final PersonService personService;
 
-    @GetMapping("/AllAvalavailablePersons")
+    @Autowired
+    public PersonController(PersonService personService) {
+        this.personService = personService;
+    }
+
+    @GetMapping("/AllAvailablePersons")
     public ResponseEntity<?> findAllPersons(
             @RequestParam(defaultValue = "0") Integer lastId,
             @RequestParam(defaultValue = "10") Integer size) {

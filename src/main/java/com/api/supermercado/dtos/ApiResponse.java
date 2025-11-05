@@ -17,4 +17,5 @@ public record ApiResponse<T>(
     public ApiResponse(String message, int count, T data) {
         this(message, count, data, OffsetDateTime.now(ZoneOffset.of("-05:00"))); // 🇪🇨 Ecuador
     }
+
 }

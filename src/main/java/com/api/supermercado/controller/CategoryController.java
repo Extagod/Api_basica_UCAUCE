@@ -3,14 +3,11 @@ package com.api.supermercado.controller;
 import com.api.supermercado.dtos.ApiResponse;
 import com.api.supermercado.dtos.CategoryFullResponseDto;
 import com.api.supermercado.dtos.CategoryRequestDto;
-import com.api.supermercado.dtos.ProductRequestDto;
 import com.api.supermercado.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +15,13 @@ import java.util.Map;
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
 
+    private final CategoryService categoryService;
+
+    @Autowired
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @PostMapping("/createCategory")
     public ResponseEntity<?> createCategory(@RequestBody CategoryRequestDto categoryRequestDto){
@@ -88,14 +89,15 @@ public class CategoryController {
 
     @PutMapping("/updateCategory")
     public ResponseEntity<?> updateCategory(@RequestBody CategoryRequestDto categoryRequestDto, @RequestParam String nameCategory){
-        String nameCategoryUpper = nameCategory.toLowerCase().strip();
-        return categoryService.UpdateCategory(nameCategory, categoryRequestDto)
+        return categoryService.UpdateCategory(nameCategory.toLowerCase().strip(), categoryRequestDto)
                 .map(updatedProduct -> ResponseEntity.ok(Map.of(
                         "message", "Product successfully updated",
                         "product", updatedProduct
                 )))
                 .orElse(ResponseEntity.notFound().build());
     }
+
+
 
     @PutMapping("/logicalErase")
     public ResponseEntity<?> logicalEraseCategory(@RequestParam String nameCategory) {
@@ -105,6 +107,9 @@ public class CategoryController {
         ));
     }
 
+
+
+    @SuppressWarnings("All")
     @GetMapping("/searchCategoryName")
     public ResponseEntity<?> getProduct(
             @RequestParam String nameCategory) {

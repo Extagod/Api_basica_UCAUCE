@@ -2,9 +2,7 @@ package com.api.supermercado.services;
 
 import com.api.supermercado.dtos.CategoryFullResponseDto;
 import com.api.supermercado.dtos.CategoryRequestDto;
-import com.api.supermercado.dtos.ProductRequestDto;
 import com.api.supermercado.entities.Category;
-import com.api.supermercado.entities.Product;
 
 import java.util.List;
 import java.util.Optional;

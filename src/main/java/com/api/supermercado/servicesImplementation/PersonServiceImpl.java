@@ -1,4 +1,4 @@
-package com.api.supermercado.IServices;
+package com.api.supermercado.servicesImplementation;
 
 import com.api.supermercado.dtos.PersonPageFullResponseDto;
 import com.api.supermercado.repositories.PersonRepository;

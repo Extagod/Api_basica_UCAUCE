@@ -15,8 +15,12 @@ import java.util.Map;
 @RequestMapping("/api/products")
 public class ProductController {
 
+    private final ProductService productService;
+
     @Autowired
-    private ProductService productService;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping("/allAvailableProducts")
     public ResponseEntity<?> getAllAvailableProducts(
@@ -44,11 +48,8 @@ public class ProductController {
         );
     }
 
-    // ✅ Search by barcode with validation and standardized response
     @GetMapping("/searchByBarCode")
-    public ResponseEntity<?> getProduct(
-
-            @RequestParam String barCode) {
+    public ResponseEntity<?> getProduct(@RequestParam String barCode) {
 
         return productService.getProduct(barCode)
                 .map(product ->
@@ -87,7 +88,6 @@ public class ProductController {
         ));
     }
 
-    // ✅ Get unavailable products with validation and ApiResponse
     @GetMapping("/unavailableProducts")
     public ResponseEntity<?> getUnavailableProducts(
             @RequestParam(defaultValue = "0") Integer lastId,
