@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public interface SupplierResponseDto {
-    Integer getSupplierId();
+    String getTaxId();
     String companyName();
     String getAddress();
     String getPhone();

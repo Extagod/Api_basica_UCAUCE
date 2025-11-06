@@ -4,6 +4,7 @@ import com.api.supermercado.dtos.ApiResponse;
 import com.api.supermercado.dtos.ProductPageResponseDto;
 import com.api.supermercado.dtos.ProductRequestDto;
 import com.api.supermercado.services.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class ProductController {
 
     @GetMapping("/allAvailableProducts")
     public ResponseEntity<?> getAllAvailableProducts(
+            @Valid
             @RequestParam(defaultValue = "0") Integer lastId,
             @RequestParam(defaultValue = "10") Integer size) {
 
@@ -49,7 +51,9 @@ public class ProductController {
     }
 
     @GetMapping("/searchByBarCode")
-    public ResponseEntity<?> getProduct(@RequestParam String barCode) {
+    public ResponseEntity<?> getProduct(
+            @Valid
+            @RequestParam String barCode) {
 
         return productService.getProduct(barCode)
                 .map(product ->
@@ -73,7 +77,7 @@ public class ProductController {
     }
 
     @PostMapping("/Add")
-    public ResponseEntity<?> addProduct(@RequestBody ProductRequestDto productRequestDto) {
+    public ResponseEntity<?> addProduct(@Valid @RequestBody ProductRequestDto productRequestDto) {
         productService.addProduct(productRequestDto);
         return ResponseEntity.ok(Map.of(
                 "message", "Product successfully created"
@@ -81,7 +85,7 @@ public class ProductController {
     }
 
     @PutMapping("/logicalErase")
-    public ResponseEntity<?> logicalEraseProduct(@RequestParam String barCode) {
+    public ResponseEntity<?> logicalEraseProduct(@Valid @RequestParam String barCode) {
         productService.deleteProduct(barCode);
         return ResponseEntity.ok(Map.of(
                 "message", "Product successfully deleted"
@@ -90,6 +94,7 @@ public class ProductController {
 
     @GetMapping("/unavailableProducts")
     public ResponseEntity<?> getUnavailableProducts(
+            @Valid
             @RequestParam(defaultValue = "0") Integer lastId,
             @RequestParam(defaultValue = "10") Integer size) {
 
@@ -114,8 +119,9 @@ public class ProductController {
         );
     }
 
-    @PutMapping("/update")
+    @PutMapping("/updateProduct")
     public ResponseEntity<?> updateProduct(
+            @Valid
             @RequestParam String barCode,
             @RequestBody ProductRequestDto productRequestDto) {
 

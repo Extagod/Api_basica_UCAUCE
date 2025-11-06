@@ -8,13 +8,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface SupplierRepository extends JpaRepository<Supplier, Integer> {
 
     @Query(value = """
 
             SELECT 
-            supplier_id AS supplierId,
+            tax_id AS taxId,
             company_name AS companyName,
             address AS address,
             phone AS phone,
@@ -35,7 +37,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Integer> {
     @Query(value = """
 
             SELECT 
-            supplier_id AS supplierId,
+            tax_id AS taxId,
             company_name AS companyName,
             address AS address,
             phone AS phone,
@@ -52,4 +54,8 @@ public interface SupplierRepository extends JpaRepository<Supplier, Integer> {
             nativeQuery = true)
     List<SupplierResponseDto> findInActiveSuppliers(@Param("lastId") Integer lastId, @Param("size") Integer size);
 
+    Optional<Supplier> findByTaxId(String taxId);
+    boolean existsByTaxId(String normalizedTaxId);
 }
+
+

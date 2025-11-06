@@ -12,7 +12,8 @@ public enum SupplierExceptions {
     INVALID_SUPPLIER_DATA("INVALID_SUPPLIER_DATA", "Some supplier fields are missing or invalid"),
 
     DATABASE_ERROR("DATABASE_ERROR", "An unexpected database error occurred while processing the supplier"),
-    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "Unexpected server error occurred");
+    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "Unexpected server error occurred"),
+    SUPPLIER_ALREADY_INACTIVE("SUPPLIER_ALREADY_INACTIVE", "Supplier is already inactive");
 
     private final String code;
     private final String message;

@@ -3,6 +3,7 @@ package com.api.supermercado.controller;
 import com.api.supermercado.dtos.ApiResponse;
 import com.api.supermercado.dtos.PersonPageFullResponseDto;
 import com.api.supermercado.services.PersonService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ public class PersonController {
 
     @GetMapping("/AllAvailablePersons")
     public ResponseEntity<?> findAllPersons(
+            @Valid
             @RequestParam(defaultValue = "0") Integer lastId,
             @RequestParam(defaultValue = "10") Integer size) {
 

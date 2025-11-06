@@ -1,17 +1,14 @@
 package com.api.supermercado.controller;
 
-import com.api.supermercado.dtos.ApiResponse;
-import com.api.supermercado.dtos.ProductPageResponseDto;
-import com.api.supermercado.dtos.SupplierResponseDto;
+import com.api.supermercado.dtos.*;
 import com.api.supermercado.services.SupplierService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/suppliers")
@@ -27,10 +24,11 @@ public class SupplierController {
 
     @GetMapping("/allAvailableSuppliers")
     public ResponseEntity<?> getAllAvailableProducts(
+            @Valid
             @RequestParam(defaultValue = "0") Integer lastId,
             @RequestParam(defaultValue = "10") Integer size) {
 
-        List<SupplierResponseDto> suppliers = supplierService.findActiveSuppliers(lastId,size);
+        List<SupplierResponseDto> suppliers = supplierService.findActiveSuppliers(lastId, size);
 
         // Add null-safety check
         if (suppliers == null || suppliers.isEmpty()) {
@@ -54,12 +52,13 @@ public class SupplierController {
 
     @GetMapping("/allUnAvailableSuppliers")
     public ResponseEntity<?> getAllUnAvailableProducts(
+            @Valid
             @RequestParam(defaultValue = "0") Integer lastId,
             @RequestParam(defaultValue = "10") Integer size) {
 
-        List<SupplierResponseDto> suppliers = supplierService.findInactiveSuppliers(lastId,size);
+        List<SupplierResponseDto> suppliers = supplierService.findInactiveSuppliers(lastId, size);
 
-        // Add null-safety check
+
         if (suppliers == null || suppliers.isEmpty()) {
             return ResponseEntity.ok().body(
                     new ApiResponse<>(
@@ -78,4 +77,63 @@ public class SupplierController {
                 )
         );
     }
+
+
+    @PostMapping("/addSupplier")
+    public ResponseEntity<?> addSupplier(@Valid @RequestBody SupplierRequestDto supplierRequestDto) {
+        supplierService.createSupplier(supplierRequestDto);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Supplier successfully created"
+        ));
+    }
+
+    @PutMapping("/updateSupplier")
+    public ResponseEntity<?> updateSupplier(
+            @Valid
+            @RequestParam String taxId,
+            @RequestBody SupplierRequestDto supplierRequestDto) {
+
+        return supplierService.updateSupplier(taxId, supplierRequestDto)
+                .map(updatedProduct -> ResponseEntity.ok(Map.of(
+                        "message", "Product successfully updated",
+                        "product", updatedProduct
+                )))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/logicalErase")
+    public ResponseEntity<?> logicalEraseSupplier(@Valid @RequestParam String taxId) {
+        supplierService.deleteSupplier(taxId);
+        return ResponseEntity.ok(Map.of(
+                "message", "Supplier successfully deleted"
+        ));
+    }
+
+    @GetMapping("/getSupplier")
+    public ResponseEntity<?> getSupplier(
+            @Valid
+            @RequestParam String taxId) {
+
+        return supplierService.getSupplier(taxId)
+                .map(product ->
+                        ResponseEntity.ok(
+                                new ApiResponse<>(
+                                        "Supplier obtained successfully.",
+                                        1,
+                                        product
+                                )
+                        )
+                )
+                .orElseGet(() ->
+                        ResponseEntity.ok().body(
+                                new ApiResponse<>(
+                                        "No Supplier found with the given barcode.",
+                                        0,
+                                        null
+                                )
+                        )
+                );
+    }
+
 }

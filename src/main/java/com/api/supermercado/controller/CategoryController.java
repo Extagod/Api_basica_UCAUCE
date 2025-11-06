@@ -4,6 +4,7 @@ import com.api.supermercado.dtos.ApiResponse;
 import com.api.supermercado.dtos.CategoryFullResponseDto;
 import com.api.supermercado.dtos.CategoryRequestDto;
 import com.api.supermercado.services.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class CategoryController {
     }
 
     @PostMapping("/createCategory")
-    public ResponseEntity<?> createCategory(@RequestBody CategoryRequestDto categoryRequestDto){
+    public ResponseEntity<?> createCategory(@Valid  @RequestBody CategoryRequestDto categoryRequestDto){
         categoryService.createCategory(categoryRequestDto);
         return ResponseEntity.ok(Map.of(
                 "message", "Category successfully created"
@@ -34,6 +35,7 @@ public class CategoryController {
 
     @GetMapping("/unavailableCategories")
     public ResponseEntity<?> getInactiveCategories(
+            @Valid
             @RequestParam(defaultValue = "0") Integer lastId,
             @RequestParam(defaultValue = "10") Integer size) {
 
@@ -62,6 +64,7 @@ public class CategoryController {
 
     @GetMapping("/availableCategories")
     public ResponseEntity<?> getActiveCategories(
+            @Valid
             @RequestParam(defaultValue = "0") Integer lastId,
             @RequestParam(defaultValue = "10") Integer size) {
 
@@ -88,7 +91,9 @@ public class CategoryController {
 
 
     @PutMapping("/updateCategory")
-    public ResponseEntity<?> updateCategory(@RequestBody CategoryRequestDto categoryRequestDto, @RequestParam String nameCategory){
+    public ResponseEntity<?> updateCategory(
+            @Valid
+            @RequestBody CategoryRequestDto categoryRequestDto, @RequestParam String nameCategory){
         return categoryService.UpdateCategory(nameCategory.toLowerCase().strip(), categoryRequestDto)
                 .map(updatedProduct -> ResponseEntity.ok(Map.of(
                         "message", "Product successfully updated",
@@ -100,7 +105,7 @@ public class CategoryController {
 
 
     @PutMapping("/logicalErase")
-    public ResponseEntity<?> logicalEraseCategory(@RequestParam String nameCategory) {
+    public ResponseEntity<?> logicalEraseCategory(@Valid @RequestParam String nameCategory) {
         categoryService.deleteCategory(nameCategory);
         return ResponseEntity.ok(Map.of(
                 "message", "Category successfully deleted"
@@ -112,6 +117,7 @@ public class CategoryController {
     @SuppressWarnings("All")
     @GetMapping("/searchCategoryName")
     public ResponseEntity<?> getProduct(
+            @Valid
             @RequestParam String nameCategory) {
 
         return categoryService.getCategoryByName(nameCategory)
