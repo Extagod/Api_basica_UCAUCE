@@ -8,7 +8,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+agit<<<<<<< HEAD
 import java.util.Optional;
+=======
+>>>>>>> 783acced48623f32da4d9415b0c948b80e801dbb
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Integer> {
@@ -35,6 +38,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
         LIMIT :pageSize
         """,
                 nativeQuery = true)
+<<<<<<< HEAD
         List<PersonPageFullResponseDto> findAllAvailablePersons(
                 @Param("lastPersonId") Integer lastPersonId,
                 @Param("pageSize") Integer pageSize
@@ -91,6 +95,13 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
 }
 
+=======
+        List<PersonPageFullResponseDto> findPersonsPage(
+                @Param("lastPersonId") Integer lastPersonId,
+                @Param("pageSize") Integer pageSize
+        );
+    }
+>>>>>>> 783acced48623f32da4d9415b0c948b80e801dbb
 
 
 

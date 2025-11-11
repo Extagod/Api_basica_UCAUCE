@@ -1,5 +1,6 @@
 package com.api.supermercado.security;
 
+<<<<<<< HEAD
 import com.api.supermercado.repositories.PersonRepository;
 import com.api.supermercado.entities.Person;
 import lombok.RequiredArgsConstructor;
@@ -97,4 +98,26 @@ public class SecurityConfig {
         System.out.println("🧂 Registrando PasswordEncoder BCrypt.\n");
         return new BCryptPasswordEncoder();
     }
+=======
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
+@Profile("dev")
+@Configuration
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable);
+
+        return http.build();
+    }
+>>>>>>> 783acced48623f32da4d9415b0c948b80e801dbb
 }
