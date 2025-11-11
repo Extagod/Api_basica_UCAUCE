@@ -35,7 +35,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
         LIMIT :pageSize
         """,
                 nativeQuery = true)
-        List<PersonPageFullResponseDto> findPersonsPage(
+        List<PersonPageFullResponseDto> findAllAvailablePersons(
                 @Param("lastPersonId") Integer lastPersonId,
                 @Param("pageSize") Integer pageSize
         );
@@ -43,6 +43,33 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     Optional<Person> findByUsername(String username);
 
     boolean existsByUsername(String username);
+
+
+    @Query(value = """
+        SELECT 
+            p.person_id AS id,
+            p.identification_type_id AS identificationType,
+            p.identification_number AS identificationNumber,
+            p.first_name AS firstName,
+            p.is_active AS is_active,
+            p.last_name AS lastName,
+            p.gender_id AS gender,
+            p.birth_date AS birthDate,
+            p.address AS address,
+            p.phone AS phone,
+            p.email AS email
+        FROM person p
+        WHERE p.person_id > :lastPersonId
+          AND p.is_active = false   
+        ORDER BY p.person_id
+        LIMIT :pageSize
+        """,
+            nativeQuery = true)
+    List<PersonPageFullResponseDto> findAllUnAvailablePersons(
+            @Param("lastPersonId") Integer lastPersonId,
+            @Param("pageSize") Integer pageSize
+    );
+
 }
 
 

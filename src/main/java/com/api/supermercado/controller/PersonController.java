@@ -52,4 +52,33 @@ public class PersonController {
                 )
         );
     }
+
+    @GetMapping("/AllUnAvailablePersons")
+    public ResponseEntity<?> findAllUnAvailablePersons(
+            @Valid
+            @RequestParam(defaultValue = "0") Integer lastId,
+            @RequestParam(defaultValue = "10") Integer size) {
+
+        List<PersonPageFullResponseDto> listPersons = personService.findAllUnAvailablePersons(lastId, size);
+
+
+        if (listPersons.isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(
+                            "The list of inactive users is empty.",
+                            0,
+                            List.of()
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        "The list of people inactive correctly",
+                        listPersons.size(),
+                        listPersons
+
+                )
+        );
+    }
 }

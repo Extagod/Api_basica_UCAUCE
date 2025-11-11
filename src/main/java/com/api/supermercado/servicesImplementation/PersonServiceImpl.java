@@ -21,6 +21,14 @@ public class PersonServiceImpl implements PersonService {
         int last = (lastPersonId == null || lastPersonId < 0) ? 0 : lastPersonId;
         int pageSize = (size == null || size <= 0) ? 10 : size;
 
-        return personRepository.findPersonsPage(last, pageSize);
+        return personRepository.findAllAvailablePersons(last, pageSize);
+    }
+
+    @Override
+    public List<PersonPageFullResponseDto> findAllUnAvailablePersons(Integer lastPersonId, Integer size) {
+        int last = (lastPersonId == null || lastPersonId < 0) ? 0 : lastPersonId;
+        int pageSize = (size == null || size <= 0) ? 10 : size;
+
+        return personRepository.findAllUnAvailablePersons(last, pageSize);
     }
 }
