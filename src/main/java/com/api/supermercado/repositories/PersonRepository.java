@@ -70,7 +70,27 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             @Param("pageSize") Integer pageSize
     );
 
+
+    @Query(value = """
+        SELECT
+            p.identification_type_id AS identificationType,
+            p.identification_number AS identificationNumber,
+            p.first_name AS firstName,
+            p.last_name AS lastName,
+            p.email AS email,
+            p.phone AS phone,
+            p.address AS address,
+            CASE WHEN p.is_active = TRUE THEN 'Active' ELSE 'Inactive' END AS isActive,
+            p.created_at AS createdAt,
+            p.updated_at AS updatedAt
+        FROM person p
+        WHERE p.identification_number = :identificationNumber
+        LIMIT 1
+        """, nativeQuery = true)
+    Optional<PersonPageFullResponseDto> findPersonByIdentificationNumber(String identificationNumber);
+
 }
+
 
 
 

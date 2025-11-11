@@ -81,4 +81,27 @@ public class PersonController {
                 )
         );
     }
+
+    @GetMapping("/searchByIdentificationNumber")
+    ResponseEntity<?> findPersonByIdentificationNumber(@Valid @RequestParam String identification_number) {
+        return personService.findPersonByIdentificationNumber(identification_number)
+                .map(person ->
+                        ResponseEntity.ok(
+                                new ApiResponse<>(
+                                        "Person obtained successfully.",
+                                        1,
+                                        person
+                                )
+                        )
+                )
+                .orElseGet(() ->
+                        ResponseEntity.ok().body(
+                                new ApiResponse<>(
+                                        "No Person found with the given identification number.",
+                                        0,
+                                        null
+                                )
+                        )
+                );
+    }
 }

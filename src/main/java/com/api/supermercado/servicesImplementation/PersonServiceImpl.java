@@ -1,11 +1,14 @@
 package com.api.supermercado.servicesImplementation;
 
 import com.api.supermercado.dtos.PersonPageFullResponseDto;
+import com.api.supermercado.exceptions.PersonException;
+import com.api.supermercado.exceptions.PersonExceptions;
 import com.api.supermercado.repositories.PersonRepository;
 import com.api.supermercado.services.PersonService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PersonServiceImpl implements PersonService {
@@ -30,5 +33,14 @@ public class PersonServiceImpl implements PersonService {
         int pageSize = (size == null || size <= 0) ? 10 : size;
 
         return personRepository.findAllUnAvailablePersons(last, pageSize);
+    }
+
+    @Override
+    public Optional<PersonPageFullResponseDto> findPersonByIdentificationNumber(String identification_number) {
+        if(identification_number == null || identification_number.isBlank())
+            throw new PersonException(PersonExceptions.INVALID_PERSON_DATA);
+
+        return  personRepository.findPersonByIdentificationNumber(identification_number);
+
     }
 }
