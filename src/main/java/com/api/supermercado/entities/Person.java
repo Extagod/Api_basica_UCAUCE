@@ -1,9 +1,6 @@
 package com.api.supermercado.entities;
 
-<<<<<<< HEAD
 import com.api.supermercado.security.Role;
-=======
->>>>>>> 783acced48623f32da4d9415b0c948b80e801dbb
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -71,16 +68,15 @@ public class Person {
     @Column(name = "username", length = 100)
     private String username;
 
-<<<<<<< HEAD
     @Column(name = "password", length = 100)
     private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
-=======
 
->>>>>>> 783acced48623f32da4d9415b0c948b80e801dbb
+
+
     // Data Persist
     @NotNull(message = "It must be specified whether the user is active or not")
     @Column(name = "is_active")

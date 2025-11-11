@@ -52,7 +52,6 @@ public class PersonController {
                 )
         );
     }
-<<<<<<< HEAD
 
     @GetMapping("/AllUnAvailablePersons")
     public ResponseEntity<?> findAllUnAvailablePersons(
@@ -105,6 +104,4 @@ public class PersonController {
                         )
                 );
     }
-=======
->>>>>>> 783acced48623f32da4d9415b0c948b80e801dbb
 }
