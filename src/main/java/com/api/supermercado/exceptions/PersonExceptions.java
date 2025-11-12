@@ -9,7 +9,8 @@ public enum PersonExceptions {
     INVALID_PERSON_ID("INVALID_PERSON_ID", "The provided person ID is invalid"),
     DUPLICATE_IDENTIFICATION("DUPLICATE_IDENTIFICATION", "A person with the same identification number already exists"),
     INVALID_PERSON_DATA("INVALID_PERSON_DATA", "Some person fields are missing or invalid"),
-
+    DUPLICATE_PERSON_USERNAME("DUPLICATE_PERSON_USERNAME", "A person with the same username already exists"),
+    DUPLICATE_PERSON_EMAIL("DUPLICATE_PERSON_EMAIL", "A person with the same email already exists"),
     IDENTIFICATION_TYPE_NOT_FOUND("IDENTIFICATION_TYPE_NOT_FOUND", "Identification type not found for the given identificationTypeId"),
     INVALID_IDENTIFICATION_TYPE_ID("INVALID_IDENTIFICATION_TYPE_ID", "The provided identification type ID is invalid"),
 

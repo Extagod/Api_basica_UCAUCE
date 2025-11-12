@@ -1,6 +1,10 @@
 package com.api.supermercado.security;
 
+import com.api.supermercado.dtos.PersonRequestRegistertDto;
 import com.api.supermercado.entities.Person;
+import com.api.supermercado.exceptions.PersonException;
+import com.api.supermercado.exceptions.PersonExceptions;
+import com.api.supermercado.mappers.PersonRequestMapper;
 import com.api.supermercado.repositories.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,28 +21,35 @@ public class AuthController {
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final PersonRequestMapper personRequestMapper;
     private final JwtService jwtService;
 
     // --------------------- REGISTER ---------------------
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    // ------------------------ LOGIN ----------------------
 
-        if(personRepository.existsByUsername(request.username())) {
-            return ResponseEntity.badRequest().body("El usuario ya existe.");
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody PersonRequestRegistertDto request) {
+
+        if (personRepository.existsByUsername(request.username())) {
+            return ResponseEntity.badRequest().body(PersonExceptions.DUPLICATE_PERSON_USERNAME);
         }
 
-        Person person = new Person();
-        person.setUsername(request.username());
-        person.setPassword(passwordEncoder.encode(request.password()));
-        person.setRole(Role.USER); // ✅ Ahora correcto
+        if (personRepository.findPersonByIdentificationNumber(request.identificationNumber()).isPresent()) {
+            return ResponseEntity.badRequest().body(PersonExceptions.DUPLICATE_IDENTIFICATION);
+        }
+
+        if (personRepository.findPersonByEmail(request.email()).isPresent()) {
+            return ResponseEntity.badRequest().body(PersonExceptions.DUPLICATE_PERSON_EMAIL);
+        }
+
+        Person person = personRequestMapper.toEntity(request);
         person.setIs_active(true);
-
+        person.setPassword(passwordEncoder.encode(request.password()));
+        person.setRole(Role.USER); // esto era papu
         personRepository.save(person);
-
-        return ResponseEntity.ok("Usuario registrado correctamente.");
+        return ResponseEntity.ok("Successfully registered user\n");
     }
 
-    // ------------------------ LOGIN ----------------------
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
 
@@ -46,9 +57,7 @@ public class AuthController {
         System.out.println(passwordEncoder.encode("12345"));
         System.out.println("🔑 Password en BD: " + user.getPassword());
         System.out.println("🔑 Coincide password? " + passwordEncoder.matches(request.password(), user.getPassword()));
-        System.out.println("➡️ Raw password recibido: [" + request.password() + "]");
-        System.out.println("➡️ Longitud recibida: " + request.password().length());
-        System.out.println("➡️ Comparación directa: " + request.password().equals("12345"));
+
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -64,8 +73,8 @@ public class AuthController {
     }
 
 
-    // ------------------ DTOs internos --------------------
-    public record RegisterRequest(String username, String password) {}
-    public record LoginRequest(String username, String password) {}
-    public record AuthResponse(String message, String token) {}
+    public record LoginRequest(String username, String password) {
+    }
+    public record AuthResponse(String message, String token) {
+    }
 }

@@ -1,18 +1,18 @@
 package com.api.supermercado.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "gender")
 public class Gender {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "gender_id", nullable = false)
-    private Integer id;
+    private Integer genderId;
 
     @Column(name = "description", nullable = false, length = 50)
     private String description;

@@ -26,7 +26,7 @@ public class Person {
 
     @NotNull(message = "Identification type is required.")
     @Column(name = "identification_type_id", nullable = false)
-    private Integer identificationType;
+    private Integer idIentificationType;
 
     @NotBlank(message = "Identification number is required.")
     @Size(max = 20, message = "Identification number cannot exceed 20 characters.")
@@ -45,7 +45,7 @@ public class Person {
 
     @NotNull(message = "Gender is required.")
     @Column(name = "gender_id", nullable = false)
-    private Integer gender;
+    private Integer genderId;
 
     @Past(message = "Birth date must be in the past.")
     @Column(name = "birth_date")
@@ -74,8 +74,6 @@ public class Person {
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
-
-
 
     // Data Persist
     @NotNull(message = "It must be specified whether the user is active or not")
