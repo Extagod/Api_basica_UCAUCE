@@ -56,7 +56,7 @@ public class AuthController {
         );
 
         Role role = user.getRoleId();
-        String token = jwtService.generateToken(request.username(), role.name());
+        String token = jwtService.generateToken(request.username(), role.getId());
 
         if (role == Role.ADMIN) {
             return ResponseEntity.ok(new AuthResponse("successful login, Welcome Admin User", token));

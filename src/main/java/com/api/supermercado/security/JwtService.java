@@ -39,7 +39,7 @@ public class JwtService {
         return extractUsername(token).equals(expectedUsername);
     }
 
-    public String generateToken(String username, String role) {
+    public String generateToken(String username, Integer role) {
         Instant now = Instant.now();
 
         return Jwts.builder()

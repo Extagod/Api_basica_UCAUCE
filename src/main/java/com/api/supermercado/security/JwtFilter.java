@@ -41,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
         System.out.println("🔍 Authorization Header: " + authHeader);
 
         // Sin token → permitir (solo será autenticado en rutas protegidas)
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer")) {
             System.out.println("⚠️  No token presente → continuando sin autenticación.");
             filterChain.doFilter(request, response);
             return;
