@@ -1,5 +1,7 @@
 package com.api.supermercado.dtos;
 
+import com.api.supermercado.security.Role;
+
 import java.time.LocalDate;
 
 
@@ -14,6 +16,7 @@ public record PersonRequestRegistertDto(
         String phone,
         String email,
         String username,
-        String password
+        String password,
+        Integer roleId
 ) {
 }

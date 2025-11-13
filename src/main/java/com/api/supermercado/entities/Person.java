@@ -73,7 +73,7 @@ public class Person {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private Role role;
+    private Role roleId;
 
     // Data Persist
     @NotNull(message = "It must be specified whether the user is active or not")

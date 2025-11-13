@@ -41,6 +41,14 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
+
+                        .requestMatchers("/api/categories/**").hasRole("ADMIN")
+                        .requestMatchers("/api/persons/**").hasRole("ADMIN")
+                        .requestMatchers("/api/products/**").hasRole("ADMIN")
+                        .requestMatchers("/api/suppliers/**").hasRole("ADMIN")
+
+
+                        .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -56,11 +64,11 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         return username -> {
             Person p = personRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
             return User.withUsername(p.getUsername())
                     .password(p.getPassword())
-                    .roles(p.getRole().name())
+                    .roles(p.getRoleId().name())
                     .build();
         };
     }

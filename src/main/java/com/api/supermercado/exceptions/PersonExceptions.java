@@ -13,6 +13,10 @@ public enum PersonExceptions {
     DUPLICATE_PERSON_EMAIL("DUPLICATE_PERSON_EMAIL", "A person with the same email already exists"),
     IDENTIFICATION_TYPE_NOT_FOUND("IDENTIFICATION_TYPE_NOT_FOUND", "Identification type not found for the given identificationTypeId"),
     INVALID_IDENTIFICATION_TYPE_ID("INVALID_IDENTIFICATION_TYPE_ID", "The provided identification type ID is invalid"),
+    THE_USER_IS_NOT_AN_ADMIN("THE USER IS NOT AN ADMIN", "The user needs to be an administrator to obtain the JWT token"),
+
+
+
 
     GENDER_NOT_FOUND("GENDER_NOT_FOUND", "Gender not found for the given genderId"),
     INVALID_GENDER_ID("INVALID_GENDER_ID", "The provided gender ID is invalid"),

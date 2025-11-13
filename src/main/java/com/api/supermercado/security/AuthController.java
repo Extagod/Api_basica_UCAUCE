@@ -1,7 +1,6 @@
 package com.api.supermercado.security;
 
 import com.api.supermercado.dtos.PersonRequestRegistertDto;
-import com.api.supermercado.entities.Person;
 import com.api.supermercado.exceptions.PersonException;
 import com.api.supermercado.exceptions.PersonExceptions;
 import com.api.supermercado.mappers.PersonRequestMapper;
@@ -23,41 +22,31 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final PersonRequestMapper personRequestMapper;
     private final JwtService jwtService;
+    private final SecurityService securityService;
 
     // --------------------- REGISTER ---------------------
-    // ------------------------ LOGIN ----------------------
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody PersonRequestRegistertDto request) {
 
-        if (personRepository.existsByUsername(request.username())) {
-            return ResponseEntity.badRequest().body(PersonExceptions.DUPLICATE_PERSON_USERNAME);
+        if (request == null) {
+            return ResponseEntity.badRequest()
+                    .body(new PersonException(PersonExceptions.INVALID_PERSON_DATA));
         }
 
-        if (personRepository.findPersonByIdentificationNumber(request.identificationNumber()).isPresent()) {
-            return ResponseEntity.badRequest().body(PersonExceptions.DUPLICATE_IDENTIFICATION);
-        }
-
-        if (personRepository.findPersonByEmail(request.email()).isPresent()) {
-            return ResponseEntity.badRequest().body(PersonExceptions.DUPLICATE_PERSON_EMAIL);
-        }
-
-        Person person = personRequestMapper.toEntity(request);
-        person.setIs_active(true);
-        person.setPassword(passwordEncoder.encode(request.password()));
-        person.setRole(Role.USER); // esto era papu
-        personRepository.save(person);
-        return ResponseEntity.ok("Successfully registered user\n");
+        securityService.registerUser(request);
+        return ResponseEntity.ok("User registered successfully");
     }
 
+    // ------------------------ LOGIN ----------------------
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
-        var user = personRepository.findByUsername(request.username()).get();
-        System.out.println(passwordEncoder.encode("12345"));
+        var user = personRepository.findByUsername(request.username())
+                .orElseThrow(() -> new PersonException(PersonExceptions.PERSON_NOT_FOUND));
+
         System.out.println("🔑 Password en BD: " + user.getPassword());
+        System.out.println("🔑 Password enviado: " + request.password());
         System.out.println("🔑 Coincide password? " + passwordEncoder.matches(request.password(), user.getPassword()));
-
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -66,15 +55,22 @@ public class AuthController {
                 )
         );
 
-        Role role = user.getRole();
+        Role role = user.getRoleId();
         String token = jwtService.generateToken(request.username(), role.name());
 
-        return ResponseEntity.ok(new AuthResponse("Login exitoso", token));
+        if (role == Role.ADMIN) {
+            return ResponseEntity.ok(new AuthResponse("successful login, Welcome Admin User", token));
+        }
+
+        if (role == Role.USER) {
+            return ResponseEntity.ok(new AuthResponse("successful login, Welcome User", token));
+        }
+
+        throw new PersonException(PersonExceptions.THE_USER_IS_NOT_AN_ADMIN);
     }
 
+    // Records
+    public record LoginRequest(String username, String password) {}
+    public record AuthResponse(String message, String token) {}
 
-    public record LoginRequest(String username, String password) {
-    }
-    public record AuthResponse(String message, String token) {
-    }
 }

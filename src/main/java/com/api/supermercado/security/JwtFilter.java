@@ -29,71 +29,70 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         System.out.println("➡️  Incoming Request: " + request.getMethod() + " " + path);
 
-        // ✅ No interceptar login, register, error, y preflight
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())
-                || path.startsWith("/auth")
-                || path.equals("/error")) {
-
-            System.out.println("🟢 Ruta pública detectada → " + path + " → Saltando filtro JWT.");
+        // 🔥 EXCLUSIÓN DE RUTAS PÚBLICAS
+        if (isPublicRoute(request)) {
+            System.out.println("🟢 Ruta pública → " + path + " → Saltando filtro JWT.");
             filterChain.doFilter(request, response);
             return;
         }
 
-        // ✅ Obtener header Authorization
+        // 🔍 Leer header Authorization
         String authHeader = request.getHeader("Authorization");
         System.out.println("🔍 Authorization Header: " + authHeader);
 
-        // ✅ Si no viene token → pasar, no cortar
+        // Sin token → permitir (solo será autenticado en rutas protegidas)
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             System.out.println("⚠️  No token presente → continuando sin autenticación.");
             filterChain.doFilter(request, response);
             return;
         }
 
-        // ✅ Extraer token y username
+        // Extraer token
         String token = authHeader.substring(7);
         String username = jwtService.extractUsername(token);
-        System.out.println("🧾 Username extraído del token: " + username);
+        System.out.println("🧾 Username extraído: " + username);
 
-        // ✅ Validación y autenticación
+        // Validar token
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             var person = personRepository.findByUsername(username);
 
-            if (person.isEmpty()) {
-                System.out.println("❌ Usuario no encontrado en la BD → " + username);
-            } else {
-                System.out.println("✅ Usuario encontrado en la BD → " + username);
-            }
-
             if (person.isPresent() && jwtService.isTokenValid(token, username)) {
 
-                System.out.println("🔐 Token válido → Autenticando usuario en el contexto de seguridad");
+                System.out.println("🔐 Token válido → autenticando...");
 
                 var userDetails = org.springframework.security.core.userdetails.User
                         .withUsername(person.get().getUsername())
                         .password(person.get().getPassword())
-                        .roles(person.get().getRole().toString())
+                        .roles(person.get().getRoleId().name())  // 🔥 CORREGIDO
                         .build();
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
-
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
+                var authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
                 );
 
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
             } else {
-                System.out.println("❌ Token inválido o expirado → usuario *NO autenticado*");
+                System.out.println("❌ Token inválido o usuario no encontrado");
             }
         }
 
-        System.out.println("➡️  Continuando la cadena de filtros...\n");
         filterChain.doFilter(request, response);
+    }
+
+    // 🔥 FUNCION CORRECTA PARA EXCLUIR TODO LO PUBLICO
+    private boolean isPublicRoute(HttpServletRequest request) {
+        String path = request.getServletPath();
+
+        return
+                "OPTIONS".equalsIgnoreCase(request.getMethod()) ||
+                        path.startsWith("/auth") ||
+                        path.startsWith("/swagger-ui") ||
+                        path.startsWith("/v3/api-docs") ||
+                        path.equals("/error");
     }
 }
