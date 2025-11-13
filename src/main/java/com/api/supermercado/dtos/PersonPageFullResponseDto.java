@@ -9,17 +9,13 @@ import java.time.LocalDateTime;
 
 public interface PersonPageFullResponseDto {
     Integer getId();
-
-    Integer getIdentificationTypeId();          // ID del tipo
-    String getIdentificationTypeDescription();  // Descripción del tipo
-
+    Integer getIdentificationTypeId();
+    String getIdentificationTypeDescription();
     String getIdentificationNumber();
     String getFirstName();
     String getLastName();
-
-    Integer getGenderId();                      // ID del género
-    String getGenderDescription();              // Descripción del género
-
+    Integer getGenderId();
+    String getGenderDescription();
     String getEmail();
     String getPhone();
     String getAddress();
