@@ -1,14 +1,12 @@
 package com.api.supermercado.dtos;
 
-import com.api.supermercado.security.Role;
-
+import java.time.Instant;
 import java.time.LocalDate;
 
-
-public record PersonRequestRegistertDto(
+public record CustomerRegisterDto(
         String firstName,
         String lastName,
-        Integer idIentificationType,
+        Integer idIdentificationType,
         String identificationNumber,
         Integer genderId,
         LocalDate birthDate,
@@ -17,6 +15,7 @@ public record PersonRequestRegistertDto(
         String email,
         String username,
         String password,
-        Integer roleId
-) {
-}
+        Instant registrationDate
+
+)
+{}

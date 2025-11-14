@@ -42,10 +42,12 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
 
+
                         .requestMatchers("/api/categories/**").hasRole("ADMIN")
                         .requestMatchers("/api/persons/**").hasRole("ADMIN")
                         .requestMatchers("/api/products/**").hasRole("ADMIN")
                         .requestMatchers("/api/suppliers/**").hasRole("ADMIN")
+
 
 
                         .requestMatchers("/api/**").authenticated()

@@ -1,7 +1,7 @@
 package com.api.supermercado.mappers;
 
-import com.api.supermercado.dtos.PersonRequestRegisterDto;
-import com.api.supermercado.entities.Person;
+import com.api.supermercado.dtos.EmployeeRegisterDto;
+import com.api.supermercado.entities.Employee;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -10,9 +10,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
-public interface PersonRequestMapper {
-
-    // DTO → ENTITY
+public interface EmployeeMapper {
     @Mapping(source = "identificationNumber", target = "identificationNumber")
     @Mapping(source = "idIdentificationType", target = "idIdentificationType")
     @Mapping(source = "firstName", target = "firstName")
@@ -22,15 +20,14 @@ public interface PersonRequestMapper {
     @Mapping(source = "address", target = "address")
     @Mapping(source = "phone", target = "phone")
     @Mapping(source = "email", target = "email")
+    @Mapping(source = "position", target = "position")
     @Mapping(source = "username", target = "username")
-    @Mapping(source = "password", target = "password", ignore = true)
-    @Mapping(
-            target = "roleId",
-            expression = "java(com.api.supermercado.security.Role.fromId(personRequestRegistertDto.roleId()))"
-    )
-    Person toEntity(PersonRequestRegisterDto personRequestRegistertDto);
+    @Mapping(source = "salary", target = "salary")
+    @Mapping(source = "hireDate", target = "hireDate")
+    @Mapping(source = "branchId", target = "branchId")
 
-    // ENTITY → DTO
+    Employee toEntity(EmployeeRegisterDto employeeRegisterDto);
+
     @Mapping(source = "identificationNumber", target = "identificationNumber")
     @Mapping(source = "idIdentificationType", target = "idIdentificationType")
     @Mapping(source = "firstName", target = "firstName")
@@ -40,11 +37,11 @@ public interface PersonRequestMapper {
     @Mapping(source = "address", target = "address")
     @Mapping(source = "phone", target = "phone")
     @Mapping(source = "email", target = "email")
+    @Mapping(source = "position", target = "position")
     @Mapping(source = "username", target = "username")
-    @Mapping(source = "password", target = "password", ignore = true)
-    @Mapping(
-            target = "roleId",
-            expression = "java(person.getRoleId() != null ? person.getRoleId().getId() : null)"
-    )
-    PersonRequestRegisterDto toDto(Person person);
+    @Mapping(source = "salary", target = "salary")
+    @Mapping(source = "hireDate", target = "hireDate")
+    @Mapping(source = "branchId", target = "branchId")
+
+    EmployeeRegisterDto toDto(Employee employee);
 }

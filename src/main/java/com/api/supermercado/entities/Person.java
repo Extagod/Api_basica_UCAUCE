@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "person")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "person_type")
 public class Person {
 
     @Id
@@ -26,7 +28,7 @@ public class Person {
 
     @NotNull(message = "Identification type is required.")
     @Column(name = "identification_type_id", nullable = false)
-    private Integer idIentificationType;
+    private Integer idIdentificationType;
 
     @NotBlank(message = "Identification number is required.")
     @Size(max = 20, message = "Identification number cannot exceed 20 characters.")
@@ -46,6 +48,7 @@ public class Person {
     @NotNull(message = "Gender is required.")
     @Column(name = "gender_id", nullable = false)
     private Integer genderId;
+
 
     @Past(message = "Birth date must be in the past.")
     @Column(name = "birth_date")
@@ -87,6 +90,7 @@ public class Person {
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updated_at;
+
 
 
 

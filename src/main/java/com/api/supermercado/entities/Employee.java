@@ -1,8 +1,7 @@
 package com.api.supermercado.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -13,22 +12,16 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "employee")
-public class Employee {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "employee_id", nullable = false)
-    private Integer id;
+@DiscriminatorValue("EMPLOYEE")
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "person_id", nullable = false)
-    private Person person;
+public class Employee extends Person {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "branch_id", nullable = false)
-    private Branch branch;
+    @PrimaryKeyJoinColumn(name = "person_id")
 
-    @Column(name = "\"position\"", length = 100)
+    @Column(name = "branch_id", nullable = false)
+    private Integer branchId;
+
+    @Column(name = "position", length = 100)
     private String position;
 
     @Column(name = "salary", precision = 10, scale = 2)
@@ -36,5 +29,7 @@ public class Employee {
 
     @Column(name = "hire_date")
     private LocalDate hireDate;
+
+
 
 }
