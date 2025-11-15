@@ -1,7 +1,7 @@
 package com.api.supermercado.security;
 
-import com.api.supermercado.repositories.PersonRepository;
 import com.api.supermercado.entities.Person;
+import com.api.supermercado.repositories.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,7 +21,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.config.http.SessionCreationPolicy;
+
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -42,19 +45,19 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
 
-
+                        // 🔥 SOLO ADMIN
                         .requestMatchers("/api/categories/**").hasRole("ADMIN")
                         .requestMatchers("/api/persons/**").hasRole("ADMIN")
                         .requestMatchers("/api/products/**").hasRole("ADMIN")
                         .requestMatchers("/api/suppliers/**").hasRole("ADMIN")
 
-
-
+                        // 🔥 CUALQUIER USUARIO AUTENTICADO
                         .requestMatchers("/api/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -62,19 +65,28 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // ---------------- USER DETAILS SERVICE -------------------
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
             Person p = personRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+                    .orElseThrow(() ->
+                            new UsernameNotFoundException("User not found with username: " + username)
+                    );
+
+            // 🔥 Convertir roles de Person → Authorities
+            var authorities = p.getRoles().stream()
+                    .map(role -> "ROLE_" + role.getDescription().toUpperCase()) // ADMIN, USER
+                    .collect(Collectors.toList());
 
             return User.withUsername(p.getUsername())
                     .password(p.getPassword())
-                    .roles(p.getRoleId().name())
+                    .authorities((GrantedAuthority) authorities)
                     .build();
         };
     }
 
+    // ---------------- AUTH PROVIDER -------------------
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -83,11 +95,13 @@ public class SecurityConfig {
         return provider;
     }
 
+    // ---------------- AUTH MANAGER -------------------
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    // ---------------- PASSWORD ENCODER -------------------
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

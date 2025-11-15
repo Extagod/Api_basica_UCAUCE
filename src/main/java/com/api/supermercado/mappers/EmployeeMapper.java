@@ -1,7 +1,10 @@
 package com.api.supermercado.mappers;
 
+import com.api.supermercado.dtos.CustomerRegisterDto;
 import com.api.supermercado.dtos.EmployeeRegisterDto;
+import com.api.supermercado.entities.Customer;
 import com.api.supermercado.entities.Employee;
+import com.api.supermercado.entities.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -25,8 +28,16 @@ public interface EmployeeMapper {
     @Mapping(source = "salary", target = "salary")
     @Mapping(source = "hireDate", target = "hireDate")
     @Mapping(source = "branchId", target = "branchId")
+    @Mapping(target = "is_active", ignore = true)
+    @Mapping(target = "roles", source = "roles")
+
 
     Employee toEntity(EmployeeRegisterDto employeeRegisterDto);
+    default Role mapRole(Integer id) {
+        Role r = new Role();
+        r.setRoleId(id);
+        return r;
+    }
 
     @Mapping(source = "identificationNumber", target = "identificationNumber")
     @Mapping(source = "idIdentificationType", target = "idIdentificationType")
@@ -42,6 +53,13 @@ public interface EmployeeMapper {
     @Mapping(source = "salary", target = "salary")
     @Mapping(source = "hireDate", target = "hireDate")
     @Mapping(source = "branchId", target = "branchId")
+    @Mapping(target = "is_active", ignore = true)
+    @Mapping(target = "roles", source = "roles")
+
 
     EmployeeRegisterDto toDto(Employee employee);
+
+    default Integer mapRole(Role role) {
+        return role.getRoleId();
+    }
 }

@@ -1,5 +1,6 @@
 package com.api.supermercado.security;
 
+import com.api.supermercado.enums.RoleEnum;
 import com.api.supermercado.repositories.PersonRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,12 +8,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -27,30 +31,24 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getServletPath();
-        System.out.println("➡️  Incoming Request: " + request.getMethod() + " " + path);
+        System.out.println("➡️ Request: " + request.getMethod() + " " + path);
 
-        // 🔥 EXCLUSIÓN DE RUTAS PÚBLICAS
+        // 🔥 EXCLUIR RUTAS PUBLICAS
         if (isPublicRoute(request)) {
-            System.out.println("🟢 Ruta pública → " + path + " → Saltando filtro JWT.");
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 🔍 Leer header Authorization
+        // 🔍 Leer Authorization header
         String authHeader = request.getHeader("Authorization");
-        System.out.println("🔍 Authorization Header: " + authHeader);
 
-        // Sin token → permitir (solo será autenticado en rutas protegidas)
-        if (authHeader == null || !authHeader.startsWith("Bearer")) {
-            System.out.println("⚠️  No token presente → continuando sin autenticación.");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extraer token
         String token = authHeader.substring(7);
         String username = jwtService.extractUsername(token);
-        System.out.println("🧾 Username extraído: " + username);
 
         // Validar token
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -59,32 +57,39 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (person.isPresent() && jwtService.isTokenValid(token, username)) {
 
-                System.out.println("🔐 Token válido → autenticando...");
+                // 🔥 Obtener roles desde el TOKEN
+                List<String> roleNames = jwtService.extractClaim(token, c -> (List<String>) c.get("roles"));
 
+                // Convertir roles → Authorities
+                var authorities = roleNames.stream()
+                        .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
+                        .collect(Collectors.toList());
+
+                // Crear userDetails manualmente
                 var userDetails = org.springframework.security.core.userdetails.User
-                        .withUsername(person.get().getUsername())
+                        .withUsername(username)
                         .password(person.get().getPassword())
-                        .roles(person.get().getRoleId().name())  // 🔥 CORREGIDO
+                        .authorities(authorities)
                         .build();
 
+                // Autenticar usuario
                 var authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
-                        userDetails.getAuthorities()
+                        authorities
                 );
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
-            } else {
-                System.out.println("❌ Token inválido o usuario no encontrado");
+                System.out.println("🔐 Usuario autenticado con roles: " + roleNames);
             }
         }
 
         filterChain.doFilter(request, response);
     }
 
-    // 🔥 FUNCION CORRECTA PARA EXCLUIR TODO LO PUBLICO
+    // 🔥 RUTAS PUBLICAS
     private boolean isPublicRoute(HttpServletRequest request) {
         String path = request.getServletPath();
 

@@ -2,6 +2,7 @@ package com.api.supermercado.dtos;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 public record EmployeeRegisterDto(
         String firstName,
@@ -18,6 +19,8 @@ public record EmployeeRegisterDto(
         Integer branchId,
         String position,
         BigDecimal salary,
-        LocalDate hireDate
+        LocalDate hireDate,
+        List<Integer>roles,
+        Boolean is_active
 ) {}
 

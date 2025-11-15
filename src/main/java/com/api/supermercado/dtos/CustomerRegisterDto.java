@@ -2,6 +2,7 @@ package com.api.supermercado.dtos;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 public record CustomerRegisterDto(
         String firstName,
@@ -15,7 +16,10 @@ public record CustomerRegisterDto(
         String email,
         String username,
         String password,
-        Instant registrationDate
+        Instant registrationDate,
+        Boolean is_active,
+        List<Integer>roles
+
 
 )
 {}

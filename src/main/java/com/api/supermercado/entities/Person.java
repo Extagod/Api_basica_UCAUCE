@@ -1,6 +1,5 @@
 package com.api.supermercado.entities;
 
-import com.api.supermercado.security.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -11,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @EntityListeners(AuditingEntityListener.class)
@@ -74,9 +74,15 @@ public class Person {
     @Column(name = "password", length = 100)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role")
-    private Role roleId;
+    @ManyToMany
+    @JoinTable(
+            name = "person_roles",
+            joinColumns = @JoinColumn(name = "person_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles;
+
+
 
     // Data Persist
     @NotNull(message = "It must be specified whether the user is active or not")
