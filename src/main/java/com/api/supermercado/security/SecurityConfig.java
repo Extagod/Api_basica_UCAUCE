@@ -65,7 +65,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // ---------------- USER DETAILS SERVICE -------------------
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
@@ -74,14 +73,16 @@ public class SecurityConfig {
                             new UsernameNotFoundException("User not found with username: " + username)
                     );
 
-            // 🔥 Convertir roles de Person → Authorities
+            // Convertir roles → SimpleGrantedAuthority
             var authorities = p.getRoles().stream()
-                    .map(role -> "ROLE_" + role.getDescription().toUpperCase()) // ADMIN, USER
+                    .map(role -> new org.springframework.security.core.authority.SimpleGrantedAuthority(
+                            "ROLE_" + role.getDescription().toUpperCase()
+                    ))
                     .collect(Collectors.toList());
 
             return User.withUsername(p.getUsername())
-                    .password(p.getPassword())
-                    .authorities((GrantedAuthority) authorities)
+                    .password(p.getPassword())  // contraseña ya hash en BD
+                    .authorities(authorities)   // ✔️ CORRECTO
                     .build();
         };
     }
