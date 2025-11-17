@@ -3,9 +3,7 @@ package com.api.supermercado.mappers;
 
 import com.api.supermercado.dtos.BranchRegisterDto;
 import com.api.supermercado.entities.Branch;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 @Mapper(
         componentModel = "spring",
@@ -26,4 +24,7 @@ public interface BranchMapper {
     @Mapping(source = "establishmentCode", target = "establishmentCode")
     @Mapping(source = "emissionPoint", target = "emissionPoint")
     Branch toEntity(BranchRegisterDto branchRegisterDto);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateBranchFromDto(BranchRegisterDto dto, @MappingTarget Branch entity);
 }

@@ -2,9 +2,13 @@ package com.api.supermercado.servicesImplementation;
 
 import com.api.supermercado.dtos.BranchFullResponseDto;
 import com.api.supermercado.dtos.BranchRegisterDto;
+import com.api.supermercado.dtos.ProductRequestDto;
 import com.api.supermercado.entities.Branch;
+import com.api.supermercado.entities.Product;
 import com.api.supermercado.exceptions.BranchException;
 import com.api.supermercado.exceptions.BranchExceptions;
+import com.api.supermercado.exceptions.ProductException;
+import com.api.supermercado.exceptions.ProductExceptions;
 import com.api.supermercado.mappers.BranchMapper;
 import com.api.supermercado.repositories.BranchRepository;
 import com.api.supermercado.services.BranchService;
@@ -45,10 +49,8 @@ public class BranchImpl implements BranchService {
         }
 
         // Validar duplicado por establishment code
-        Branch existingBranch = branchRepository.findByEstablishmentCodeNative(branchRegisterDto.establishmentCode());
-        if (existingBranch != null) {
-            throw new BranchException(BranchExceptions.DUPLICATE_ESTABLISHMENT_CODE);
-        }
+        Branch existingBranch = branchRepository.findByEstablishmentCode(branchRegisterDto.establishmentCode())
+                .orElseThrow(()-> new BranchException(BranchExceptions.DUPLICATE_ESTABLISHMENT_CODE));
 
         // Crear entidad desde DTO
         Branch branch = branchMapper.toEntity(branchRegisterDto);
@@ -62,7 +64,36 @@ public class BranchImpl implements BranchService {
 
     @Override
     public void deleteBranch(String establishmentCode) {
+        if(establishmentCode == null || establishmentCode.isBlank()){
+            throw new BranchException(BranchExceptions.INVALID_BRANCH_DATA);
+        }
+        Branch branch = branchRepository.findByEstablishmentCode(establishmentCode)
+                .orElseThrow(() -> new ProductException(ProductExceptions.PRODUCT_NOT_FOUND));
+        branch.setIs_active(false);
+        branchRepository.save(branch);
 
     }
+
+    @Override
+    public Optional<Branch> UpdateBranch(String establishmentCode, BranchRegisterDto branchRegisterDto) {
+        if(establishmentCode == null || establishmentCode.isBlank()){
+            throw new BranchException(BranchExceptions.INVALID_BRANCH_DATA);
+        }
+        Branch existingBranch = branchRepository.findByEstablishmentCode(establishmentCode)
+                .orElseThrow(() -> new BranchException(BranchExceptions.BRANCH_NOT_FOUND));
+
+        if (!existingBranch.getEstablishmentCode().equalsIgnoreCase(branchRegisterDto.establishmentCode())
+                && branchRepository.existsBranchByEstablishmentCode((branchRegisterDto.establishmentCode()))) {
+            throw new ProductException(ProductExceptions.DUPLICATE_PRODUCT);
+        }
+
+        branchMapper.updateBranchFromDto(branchRegisterDto, existingBranch);
+
+        Branch updated = branchRepository.save(existingBranch);
+
+        return Optional.of(updated);
+    }
+
+
 
 }

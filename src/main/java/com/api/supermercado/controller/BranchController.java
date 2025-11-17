@@ -1,9 +1,6 @@
 package com.api.supermercado.controller;
 
-import com.api.supermercado.dtos.ApiResponse;
-import com.api.supermercado.dtos.BranchFullResponseDto;
-import com.api.supermercado.dtos.BranchRegisterDto;
-import com.api.supermercado.dtos.ProductPageResponseDto;
+import com.api.supermercado.dtos.*;
 import com.api.supermercado.services.BranchService;
 import com.api.supermercado.services.ProductService;
 import jakarta.validation.Valid;
@@ -12,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/branches")
@@ -80,4 +78,26 @@ public class BranchController {
         branchService.createBranch(branchRegisterDto);
         return  ResponseEntity.ok("Branch successfully created");
     }
+
+    @PutMapping("/logicalErase")
+    public ResponseEntity<?> logicalEraseProduct(@Valid @RequestParam String establishmentCode) {
+        branchService.deleteBranch(establishmentCode);
+        return ResponseEntity.ok(Map.of(
+                "message", "Branch successfully deleted"
+        ));
+    }
+    @PutMapping("/updateBranch")
+    public ResponseEntity<?> updateBranch(
+            @Valid
+            @RequestParam String establishmentCode,
+            @RequestBody BranchRegisterDto branchRegisterDto) {
+
+        return branchService.UpdateBranch(establishmentCode, branchRegisterDto)
+                .map(updateBranch -> ResponseEntity.ok(Map.of(
+                        "message", "Product successfully updated",
+                        "product", updateBranch
+                )))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }

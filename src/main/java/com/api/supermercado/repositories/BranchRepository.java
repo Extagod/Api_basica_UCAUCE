@@ -60,12 +60,7 @@ public interface BranchRepository extends JpaRepository<Branch, Integer> {
 
 
 
-    @Query(value = """
-    SELECT *
-    FROM branch
-    WHERE establishment_code = :code
-    LIMIT 1
-    """, nativeQuery = true)
-    Branch findByEstablishmentCodeNative(@Param("code") String code);
+    Optional<Branch> findByEstablishmentCode(String establishmentCode);
 
+    boolean existsBranchByEstablishmentCode(String establishmentCode);
 }

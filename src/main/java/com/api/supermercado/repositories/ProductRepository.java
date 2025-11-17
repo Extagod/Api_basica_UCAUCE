@@ -43,6 +43,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             @Param("lastProductId") Integer lastProductId,
             @Param("pageSize") Integer pageSize
     );
+
+
     boolean existsByBarCode(String barCode);
 
     @Query(value = """
