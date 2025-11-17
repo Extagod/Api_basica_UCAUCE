@@ -12,6 +12,7 @@ import com.api.supermercado.exceptions.ProductExceptions;
 import com.api.supermercado.mappers.BranchMapper;
 import com.api.supermercado.repositories.BranchRepository;
 import com.api.supermercado.services.BranchService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -73,7 +74,7 @@ public class BranchImpl implements BranchService {
         branchRepository.save(branch);
 
     }
-
+    @Transactional
     @Override
     public Optional<Branch> UpdateBranch(String establishmentCode, BranchRegisterDto branchRegisterDto) {
         if(establishmentCode == null || establishmentCode.isBlank()){

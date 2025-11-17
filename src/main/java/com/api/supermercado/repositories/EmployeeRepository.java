@@ -1,8 +1,7 @@
 package com.api.supermercado.repositories;
 
-import com.api.supermercado.dtos.CustomerPageFullResponseDto;
 import com.api.supermercado.dtos.PersonPageFullResponseDto;
-import com.api.supermercado.entities.Customer;
+import com.api.supermercado.entities.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,42 +9,14 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface CustomerRepository extends JpaRepository<Customer, Integer> {
+public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     boolean existsByUsername(String username);
 
-    Optional<Customer> findByIdentificationNumber(String identificationNumber);
+    Optional<Employee> findByIdentificationNumber(String identificationNumber);
 
     // -------------------------------------------------------------------------
-    // 1. BUSCAR CUSTOMER POR IDENTIFICACIÓN (DTO EXCLUSIVO DE CUSTOMER)
-    // -------------------------------------------------------------------------
-    @Query(value = """
-        SELECT
-            p.person_id AS id,
-            p.first_name AS firstName,
-            p.last_name AS lastName,
-            p.identification_type_id AS identificationTypeId,
-            it.description AS identificationTypeDescription,
-            p.identification_number AS identificationNumber,
-            p.email AS email,
-            p.phone AS phone,
-            p.address AS address,
-            CASE WHEN p.is_active THEN 'Active' ELSE 'Inactive' END AS isActive,
-            p.created_at AS createdAt,
-            p.updated_at AS updatedAt,
-            c.registration_date AS registrationDate
-        FROM person p
-        INNER JOIN customer c ON p.person_id = c.person_id
-        INNER JOIN identification_type it ON p.identification_type_id = it.identification_type_id
-        WHERE p.identification_number = :identificationNumber
-        LIMIT 1
-        """, nativeQuery = true)
-    Optional<CustomerPageFullResponseDto> findCustomerByIdentificationNumber(
-            @Param("identificationNumber") String identificationNumber
-    );
-
-    // -------------------------------------------------------------------------
-    // 2. LISTAR CUSTOMERS ACTIVOS (DTO GENERAL DE PERSONA)
+    // 1. LISTAR EMPLOYEES ACTIVOS (DTO GENERAL)
     // -------------------------------------------------------------------------
     @Query(value = """
         SELECT 
@@ -65,12 +36,16 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
             p.created_at AS createdAt,
             p.updated_at AS updatedAt,
             
-            'CUSTOMER' AS personType,
+            'EMPLOYEE' AS personType,
 
-            c.registration_date AS registrationDate
+            -- Campos exclusivos Employee
+            e.branch_id AS branchId,
+            e.position AS position,
+            e.salary AS salary,
+            e.hire_date AS hireDate
 
         FROM person p
-        INNER JOIN customer c ON p.person_id = c.person_id
+        INNER JOIN employee e ON p.person_id = e.person_id
         INNER JOIN identification_type it ON p.identification_type_id = it.identification_type_id
         INNER JOIN gender g ON p.gender_id = g.gender_id
 
@@ -80,13 +55,13 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
         ORDER BY p.person_id
         LIMIT :pageSize
         """, nativeQuery = true)
-    List<PersonPageFullResponseDto> findAllActiveCustomers(
+    List<PersonPageFullResponseDto> findAllActiveEmployees(
             @Param("lastPersonId") Integer lastPersonId,
             @Param("pageSize") Integer pageSize
     );
 
     // -------------------------------------------------------------------------
-    // 3. LISTAR CUSTOMERS INACTIVOS (DTO GENERAL DE PERSONA)
+    // 2. LISTAR EMPLOYEES INACTIVOS (DTO GENERAL)
     // -------------------------------------------------------------------------
     @Query(value = """
         SELECT 
@@ -106,12 +81,16 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
             p.created_at AS createdAt,
             p.updated_at AS updatedAt,
             
-            'CUSTOMER' AS personType,
+            'EMPLOYEE' AS personType,
 
-            c.registration_date AS registrationDate
+            -- Campos exclusivos Employee
+            e.branch_id AS branchId,
+            e.position AS position,
+            e.salary AS salary,
+            e.hire_date AS hireDate
 
         FROM person p
-        INNER JOIN customer c ON p.person_id = c.person_id
+        INNER JOIN employee e ON p.person_id = e.person_id
         INNER JOIN identification_type it ON p.identification_type_id = it.identification_type_id
         INNER JOIN gender g ON p.gender_id = g.gender_id
 
@@ -121,9 +100,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
         ORDER BY p.person_id
         LIMIT :pageSize
         """, nativeQuery = true)
-    List<PersonPageFullResponseDto> findAllUnActiveCustomers(
+    List<PersonPageFullResponseDto> findAllUnActiveEmployees(
             @Param("lastPersonId") Integer lastPersonId,
             @Param("pageSize") Integer pageSize
     );
-
 }

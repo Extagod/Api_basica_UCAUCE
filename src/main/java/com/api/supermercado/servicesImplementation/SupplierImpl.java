@@ -10,6 +10,7 @@ import com.api.supermercado.exceptions.SupplierExceptions;
 import com.api.supermercado.mappers.SupplierRequestMapper;
 import com.api.supermercado.repositories.SupplierRepository;
 import com.api.supermercado.services.SupplierService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,6 +93,7 @@ public class SupplierImpl implements SupplierService {
         supplierRepository.save(supplier);
     }
 
+    @Transactional
     @Override
     public Optional<Supplier> updateSupplier(String taxId, SupplierRequestDto dto) {
         if (dto == null) {

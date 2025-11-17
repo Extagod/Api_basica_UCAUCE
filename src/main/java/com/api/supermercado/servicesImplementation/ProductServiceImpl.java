@@ -8,6 +8,7 @@ import com.api.supermercado.exceptions.ProductExceptions;
 import com.api.supermercado.mappers.ProductRequestMapper;
 import com.api.supermercado.repositories.ProductRepository;
 import com.api.supermercado.services.ProductService;
+import jakarta.transaction.Transactional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -78,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
         if (size == null || size <= 0) size = 10;
         return productRepository.findProductsDisabled(lastId, size);
     }
-
+    @Transactional
     @Override
     public Optional<Product> UpdateProduct(String barCode, ProductRequestDto dto) {
 

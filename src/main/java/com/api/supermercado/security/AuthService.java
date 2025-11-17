@@ -8,7 +8,7 @@ import com.api.supermercado.entities.Role;
 import com.api.supermercado.mappers.CustomerMapper;
 import com.api.supermercado.mappers.EmployeeMapper;
 import com.api.supermercado.repositories.CustomerRepository;
-import com.api.supermercado.repositories.EmployeRepository;
+import com.api.supermercado.repositories.EmployeeRepository;
 import com.api.supermercado.repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +24,7 @@ public class AuthService {
     private final CustomerMapper customerMapper;
     private final PasswordEncoder passwordEncoder;
     private final EmployeeMapper employeeMapper;
-    private final EmployeRepository employeRepository;
+    private final EmployeeRepository employeeRepository;
     private final RoleRepository roleRepository;
 
 
@@ -112,7 +112,7 @@ public class AuthService {
         employee.setRoles(roles);
 
         System.out.println("💾 Guardando EMPLOYEE en BD...");
-        employeRepository.save(employee);
+        employeeRepository.save(employee);
 
         System.out.println("🎉 EMPLOYEE REGISTRADO EXITOSAMENTE");
     }

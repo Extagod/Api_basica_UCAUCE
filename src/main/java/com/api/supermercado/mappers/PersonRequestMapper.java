@@ -2,11 +2,11 @@ package com.api.supermercado.mappers;
 
 import com.api.supermercado.dtos.CustomerRegisterDto;
 import com.api.supermercado.dtos.PersonRequestRegisterDto;
-import com.api.supermercado.entities.Customer;
 import com.api.supermercado.entities.Person;
 import com.api.supermercado.entities.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
@@ -56,5 +56,8 @@ public interface PersonRequestMapper {
     default Integer mapRole(Role role) {
         return role.getRoleId();
     }
+
+    void updatePersonWithDto(CustomerRegisterDto dto, @MappingTarget Person person);
+
 
 }

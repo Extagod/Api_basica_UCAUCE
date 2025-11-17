@@ -9,6 +9,7 @@ import com.api.supermercado.exceptions.ProductException;
 import com.api.supermercado.exceptions.ProductExceptions;
 import com.api.supermercado.repositories.CategoryRepository;
 import com.api.supermercado.services.CategoryService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -66,6 +67,7 @@ public class CategoryImpl implements CategoryService {
 
 
 
+    @Transactional
     @Override
     public Optional<Category> UpdateCategory(String nameCategory, CategoryRequestDto dto) {
         try {
