@@ -4,6 +4,7 @@ import com.api.supermercado.dtos.ApiResponse;
 import com.api.supermercado.dtos.PersonPageFullResponseDto;
 import com.api.supermercado.services.PersonService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,29 +15,26 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/persons")
+@RequiredArgsConstructor
 public class PersonController {
 
 
     private final PersonService personService;
 
-    @Autowired
-    public PersonController(PersonService personService) {
-        this.personService = personService;
-    }
 
-    @GetMapping("/AllAvailablePersons")
-    public ResponseEntity<?> findAllPersons(
+    @GetMapping("/AllAvailableCustomers")
+    public ResponseEntity<?> findAllCustomers(
             @Valid
             @RequestParam(defaultValue = "0") Integer lastId,
             @RequestParam(defaultValue = "10") Integer size) {
 
-        List<PersonPageFullResponseDto> listPersons = personService.findAllAvailablePersons(lastId, size);
+        List<PersonPageFullResponseDto> listActiveCustomers = personService.findAllActiveCustomers(lastId, size);
 
 
-        if (listPersons.isEmpty()) {
+        if (listActiveCustomers.isEmpty()) {
             return ResponseEntity.badRequest().body(
                     new ApiResponse<>(
-                            "The list of active users is empty.",
+                            "The list of active Customers is empty.",
                             0,
                             List.of()
                     )
@@ -45,24 +43,24 @@ public class PersonController {
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
-                        "The list of people obtained correctly",
-                        listPersons.size(),
-                        listPersons
+                        "The list of Customers obtained correctly",
+                        listActiveCustomers.size(),
+                        listActiveCustomers
 
                 )
         );
     }
 
-    @GetMapping("/AllUnAvailablePersons")
-    public ResponseEntity<?> findAllUnAvailablePersons(
+    @GetMapping("/AllUnAvailableCustomers")
+    public ResponseEntity<?> findAllUnAvailableCustomers(
             @Valid
             @RequestParam(defaultValue = "0") Integer lastId,
             @RequestParam(defaultValue = "10") Integer size) {
 
-        List<PersonPageFullResponseDto> listPersons = personService.findAllUnAvailablePersons(lastId, size);
+        List<PersonPageFullResponseDto> listUnActiveCustomers = personService.findAllUnActiveCustomers(lastId, size);
 
 
-        if (listPersons.isEmpty()) {
+        if (listUnActiveCustomers.isEmpty()) {
             return ResponseEntity.badRequest().body(
                     new ApiResponse<>(
                             "The list of inactive users is empty.",
@@ -75,12 +73,83 @@ public class PersonController {
         return ResponseEntity.ok(
                 new ApiResponse<>(
                         "The list of people inactive correctly",
-                        listPersons.size(),
-                        listPersons
+                        listUnActiveCustomers.size(),
+                        listUnActiveCustomers
 
                 )
         );
     }
+
+
+    @GetMapping("/AllAvailableEmployees")
+    public ResponseEntity<?> findAllActiveEmployees(
+            @Valid
+            @RequestParam(defaultValue = "0") Integer lastId,
+            @RequestParam(defaultValue = "10") Integer size) {
+
+        List<PersonPageFullResponseDto> listActiveEmployees = personService.findAllActiveEmployees(lastId, size);
+
+
+        if (listActiveEmployees.isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(
+                            "The list of active Employees is empty.",
+                            0,
+                            List.of()
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        "The list of Employees obtained correctly",
+                        listActiveEmployees.size(),
+                        listActiveEmployees
+
+                )
+        );
+    }
+
+    @GetMapping("/AllUnAvailableEmployees")
+    public ResponseEntity<?> findAllUnActiveEmployees(
+            @Valid
+            @RequestParam(defaultValue = "0") Integer lastId,
+            @RequestParam(defaultValue = "10") Integer size) {
+
+        List<PersonPageFullResponseDto> listUnActiveEmployees = personService.findAllUnActiveEmployees(lastId, size);
+
+
+        if (listUnActiveEmployees.isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(
+                            "The list of inactive users is empty.",
+                            0,
+                            List.of()
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        "The list of people inactive correctly",
+                        listUnActiveEmployees.size(),
+                        listUnActiveEmployees
+
+                )
+        );
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     @GetMapping("/searchByIdentificationNumber")
     ResponseEntity<?> findPersonByIdentificationNumber(@Valid @RequestParam String identification_number) {
