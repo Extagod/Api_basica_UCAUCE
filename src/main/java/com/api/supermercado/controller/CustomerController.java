@@ -1,17 +1,17 @@
 package com.api.supermercado.controller;
 
 import com.api.supermercado.dtos.ApiResponse;
+import com.api.supermercado.dtos.CustomerRegisterDto;
 import com.api.supermercado.dtos.PersonPageFullResponseDto;
+import com.api.supermercado.dtos.ProductRequestDto;
 import com.api.supermercado.services.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -79,5 +79,26 @@ public class CustomerController {
         );
     }
 
+    @PutMapping("/updateCustomer")
+    public ResponseEntity<?> updateCustomer(
+            @Valid
+            @RequestParam String identificationNumber,
+            @RequestBody CustomerRegisterDto customerRegisterDto) {
+
+        return customerService.updateCustomer(identificationNumber,customerRegisterDto)
+                .map(updateCustomer-> ResponseEntity.ok(Map.of(
+                        "message", "Customer successfully updated",
+                        "product", updateCustomer
+                )))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/logicalErase")
+    public ResponseEntity<?> logicalEraseCustomer(@Valid @RequestParam String identificationNumber) {
+        customerService.deleteCustomer(identificationNumber);
+        return ResponseEntity.ok(Map.of(
+                "message", "Customer successfully deleted"
+        ));
+    }
 
 }
