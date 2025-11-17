@@ -1,17 +1,17 @@
 package com.api.supermercado.controller;
 
 import com.api.supermercado.dtos.ApiResponse;
+import com.api.supermercado.dtos.CustomerRegisterDto;
+import com.api.supermercado.dtos.EmployeeRegisterDto;
 import com.api.supermercado.dtos.PersonPageFullResponseDto;
 import com.api.supermercado.services.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -80,39 +80,54 @@ public class EmployeeController {
 
 
 
+    @PutMapping("/updateEmployee")
+    public ResponseEntity<?> updateEmployee(
+            @Valid
+            @RequestParam String identificationNumber,
+            @RequestBody EmployeeRegisterDto employeeRegisterDto) {
+
+        return employeeService.updateEmployee(identificationNumber,employeeRegisterDto)
+                .map(updateEmployee-> ResponseEntity.ok(Map.of(
+                        "message", "Employee successfully updated",
+                        "Employee", updateEmployee
+                )))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/logicalErase")
+    public ResponseEntity<?> logicalEraseCustomer(@Valid @RequestParam String identificationNumber) {
+        employeeService.deleteEmployee(identificationNumber);
+        return ResponseEntity.ok(Map.of(
+                "message", "Employee successfully deleted"
+        ));
+    }
 
 
 
+    @GetMapping("/searchByIdentificationNumber")
+    public ResponseEntity<?> getEmployee(
+            @Valid
+            @RequestParam String identificationNumber) {
 
-
-
-
-
-
-
-//    @GetMapping("/searchByIdentificationNumber")
-//    ResponseEntity<?> findPersonByIdentificationNumber(@Valid @RequestParam String identification_number) {
-//        return personService.findPersonByIdentificationNumber(identification_number)
-//                .map(person ->
-//                        ResponseEntity.ok(
-//                                new ApiResponse<>(
-//                                        "Person obtained successfully.",
-//                                        1,
-//                                        person
-//                                )
-//                        )
-//                )
-//                .orElseGet(() ->
-//                        ResponseEntity.ok().body(
-//                                new ApiResponse<>(
-//                                        "No Person found with the given identification number.",
-//                                        0,
-//                                        null
-//                                )
-//                        )
-//                );
-//    }
-//
-
+        return employeeService.findEmployeeByIdentificationNumber(identificationNumber)
+                .map(employee ->
+                        ResponseEntity.ok(
+                                new ApiResponse<>(
+                                        "Employee  obtained successfully.",
+                                        1,
+                                        employee
+                                )
+                        )
+                )
+                .orElseGet(() ->
+                        ResponseEntity.ok().body(
+                                new ApiResponse<>(
+                                        "No Employee found with the given identification number.",
+                                        0,
+                                        null
+                                )
+                        )
+                );
+    }
 
 }

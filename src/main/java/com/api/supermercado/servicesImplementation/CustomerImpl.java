@@ -1,5 +1,6 @@
 package com.api.supermercado.servicesImplementation;
 
+import com.api.supermercado.dtos.CustomerPageFullResponseDto;
 import com.api.supermercado.dtos.CustomerRegisterDto;
 import com.api.supermercado.dtos.PersonPageFullResponseDto;
 import com.api.supermercado.entities.Customer;
@@ -10,6 +11,7 @@ import com.api.supermercado.mappers.PersonRequestMapper;
 import com.api.supermercado.repositories.CustomerRepository;
 import com.api.supermercado.repositories.PersonRepository;
 import com.api.supermercado.services.CustomerService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,7 @@ public class CustomerImpl implements CustomerService {
         return customerRepository.findAllUnActiveCustomers(last, pageSize);
     }
 
+    @Transactional
     @Override
     public Optional<Person> updateCustomer(String identificationNumber, CustomerRegisterDto dto) {
 
@@ -76,6 +79,17 @@ public class CustomerImpl implements CustomerService {
                 .orElseThrow(() -> new PersonException(PersonExceptions.PERSON_NOT_FOUND));
 
         existing.setIs_active(false);
+    }
+
+    @Override
+    public Optional<CustomerPageFullResponseDto> findEmployeeByIdentificationNumber(String identificationNumber) {
+        if (identificationNumber == null || identificationNumber.isBlank()) {
+            throw new PersonException(PersonExceptions.INVALID_PERSON_DATA);
+        }
+
+        return customerRepository.findCustomerByIdentificationNumber(identificationNumber)
+                .stream()
+                .findFirst();
     }
 
 }

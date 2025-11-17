@@ -1,6 +1,8 @@
 package com.api.supermercado.services;
 
+import com.api.supermercado.dtos.CustomerPageFullResponseDto;
 import com.api.supermercado.dtos.CustomerRegisterDto;
+import com.api.supermercado.dtos.EmployeePageFullResponseDto;
 import com.api.supermercado.dtos.PersonPageFullResponseDto;
 import com.api.supermercado.entities.Customer;
 import com.api.supermercado.entities.Person;
@@ -16,5 +18,6 @@ public interface CustomerService {
     //Update Customer
     Optional<Person> updateCustomer(String identification_number, CustomerRegisterDto customerRegisterDto);
     void deleteCustomer(String identificationNumber);
+    Optional<CustomerPageFullResponseDto> findEmployeeByIdentificationNumber(String identificationNumber);
 
 }

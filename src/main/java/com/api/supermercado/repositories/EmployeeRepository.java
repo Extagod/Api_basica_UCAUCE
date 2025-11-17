@@ -1,5 +1,6 @@
 package com.api.supermercado.repositories;
 
+import com.api.supermercado.dtos.EmployeePageFullResponseDto;
 import com.api.supermercado.dtos.PersonPageFullResponseDto;
 import com.api.supermercado.entities.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +17,42 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     Optional<Employee> findByIdentificationNumber(String identificationNumber);
 
     // -------------------------------------------------------------------------
-    // 1. LISTAR EMPLOYEES ACTIVOS (DTO GENERAL)
+    // 1. BUSCAR EMPLOYEE POR IDENTIFICACIÓN (DTO EXCLUSIVO DE EMPLOYEE)
+    // -------------------------------------------------------------------------
+    @Query(value = """
+        SELECT
+            p.person_id AS id,
+            p.first_name AS firstName,
+            p.last_name AS lastName,
+            p.identification_type_id AS identificationTypeId,
+            it.description AS identificationTypeDescription,
+            p.identification_number AS identificationNumber,
+            p.email AS email,
+            p.phone AS phone,
+            p.address AS address,
+            CASE WHEN p.is_active THEN 'Active' ELSE 'Inactive' END AS isActive,
+            p.created_at AS createdAt,
+            p.updated_at AS updatedAt,
+            
+            -- Campos exclusivos Employee
+            e.branch_id AS branchId,
+            e.position AS position,
+            e.salary AS salary,
+            e.hire_date AS hireDate
+
+        FROM person p
+        INNER JOIN employee e ON p.person_id = e.person_id
+        INNER JOIN identification_type it ON p.identification_type_id = it.identification_type_id
+        WHERE p.identification_number = :identificationNumber
+        LIMIT 1
+        """, nativeQuery = true)
+    Optional<EmployeePageFullResponseDto> findEmployeeByIdentificationNumber(
+            @Param("identificationNumber") String identificationNumber
+    );
+
+
+    // -------------------------------------------------------------------------
+    // 2. LISTAR EMPLOYEES ACTIVOS (DTO GENERAL PERSONPAGEFULLRESPONSE)
     // -------------------------------------------------------------------------
     @Query(value = """
         SELECT 
@@ -60,8 +96,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
             @Param("pageSize") Integer pageSize
     );
 
+
     // -------------------------------------------------------------------------
-    // 2. LISTAR EMPLOYEES INACTIVOS (DTO GENERAL)
+    // 3. LISTAR EMPLOYEES INACTIVOS
     // -------------------------------------------------------------------------
     @Query(value = """
         SELECT 
@@ -104,4 +141,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
             @Param("lastPersonId") Integer lastPersonId,
             @Param("pageSize") Integer pageSize
     );
+
+    boolean existsByIdentificationNumber(String identificationNumber);
 }

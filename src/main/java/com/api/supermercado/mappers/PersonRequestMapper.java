@@ -1,6 +1,7 @@
 package com.api.supermercado.mappers;
 
 import com.api.supermercado.dtos.CustomerRegisterDto;
+import com.api.supermercado.dtos.EmployeeRegisterDto;
 import com.api.supermercado.dtos.PersonRequestRegisterDto;
 import com.api.supermercado.entities.Person;
 import com.api.supermercado.entities.Role;
@@ -58,6 +59,6 @@ public interface PersonRequestMapper {
     }
 
     void updatePersonWithDto(CustomerRegisterDto dto, @MappingTarget Person person);
-
+    void updatePersonWithDto(EmployeeRegisterDto dto, @MappingTarget Person person);
 
 }

@@ -88,7 +88,7 @@ public class CustomerController {
         return customerService.updateCustomer(identificationNumber,customerRegisterDto)
                 .map(updateCustomer-> ResponseEntity.ok(Map.of(
                         "message", "Customer successfully updated",
-                        "product", updateCustomer
+                        "Customer", updateCustomer
                 )))
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -101,4 +101,30 @@ public class CustomerController {
         ));
     }
 
+
+    @GetMapping("/searchByIdentificationNumber")
+    public ResponseEntity<?> getCustomer(
+            @Valid
+            @RequestParam String identificationNumber) {
+
+        return customerService.findEmployeeByIdentificationNumber(identificationNumber)
+                .map(customer ->
+                        ResponseEntity.ok(
+                                new ApiResponse<>(
+                                        "Customer  obtained successfully.",
+                                        1,
+                                        customer
+                                )
+                        )
+                )
+                .orElseGet(() ->
+                        ResponseEntity.ok().body(
+                                new ApiResponse<>(
+                                        "No Costumer found with the given identification number.",
+                                        0,
+                                        null
+                                )
+                        )
+                );
+    }
 }
