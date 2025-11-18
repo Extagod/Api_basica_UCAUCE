@@ -20,6 +20,7 @@ public interface ProductRequestMapper {
     @Mapping(source = "supplierId", target = "supplierId")
     @Mapping(source = "barCode", target = "barCode")
     @Mapping(source = "activeProduct", target ="activeProduct")
+    @Mapping(source = "hasTax", target = "hasTax")
     Product toEntity(ProductRequestDto dto);
 
 
@@ -31,6 +32,7 @@ public interface ProductRequestMapper {
     @Mapping(source = "supplierId", target = "supplierId")
     @Mapping(source = "barCode", target = "barCode")
     @Mapping(source = "activeProduct", target ="activeProduct")
+    @Mapping(source = "hasTax", target = "hasTax")
     ProductRequestDto toDto(Product entity);
 
 

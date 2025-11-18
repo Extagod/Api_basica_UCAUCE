@@ -16,6 +16,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query(value = """
         SELECT 
             p.product_id AS productId,
+            p.has_tax AS hasTax,
             p.name AS productName,
             p.description AS productDescription,
             p.active_product AS activeProduct,
@@ -51,6 +52,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     SELECT 
         p.product_id AS productId,
         p.name AS productName,
+        p.has_tax AS hasTax,
         p.description AS productDescription,
         p.active_product AS activeProduct,
         p.price AS price,
@@ -85,6 +87,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     SELECT 
         p.product_id AS productId,
         p.name AS productName,
+        p.has_tax AS hasTax,
         p.description AS productDescription,
         p.active_product AS activeProduct,
         p.price AS price,

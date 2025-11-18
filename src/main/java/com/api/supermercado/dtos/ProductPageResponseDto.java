@@ -19,4 +19,5 @@ public interface ProductPageResponseDto {
     Boolean getActiveProduct();
     LocalDateTime getCreatedAt();
     LocalDateTime getUpdatedAt();
+    Boolean getHasTax();
 }

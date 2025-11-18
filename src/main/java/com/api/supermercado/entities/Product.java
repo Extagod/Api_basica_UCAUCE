@@ -67,6 +67,11 @@ public class Product {
     private Integer supplierId;
 
 
+    @NotNull(message = "Has tax is required.")
+    @Column(name = "has_tax", nullable = false)
+    private Boolean hasTax;
+
+
     //Data persist
     @NotNull(message = "Product active state is required.")
     @ColumnDefault("true")

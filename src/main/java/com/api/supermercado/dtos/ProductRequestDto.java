@@ -20,6 +20,7 @@ public record ProductRequestDto(
         Integer categoryId,
         Integer supplierId,
         String barCode,
-        Boolean activeProduct
+        Boolean activeProduct,
+        Boolean hasTax
 ) {}
 

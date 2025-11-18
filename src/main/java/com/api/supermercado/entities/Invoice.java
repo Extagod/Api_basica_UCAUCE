@@ -33,9 +33,9 @@ public class Invoice {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "branch_id", nullable = false)
-    private Branch branch;
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name = "branch_id", nullable = false)
+//    private Branch branch;
 
     @ColumnDefault("0")
     @Column(name = "total", precision = 10, scale = 2)
