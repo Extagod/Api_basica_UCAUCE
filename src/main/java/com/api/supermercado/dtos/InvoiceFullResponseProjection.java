@@ -10,7 +10,7 @@ public interface InvoiceFullResponseProjection {
     // FK IDs
     Integer getIssuingCompanyId();
     Integer getCustomerId();
-    Integer getCreatorUserId();
+    Integer getEmployeeId();
 
     // Datos principales
     Instant getIssueDate();

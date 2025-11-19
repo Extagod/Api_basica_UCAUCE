@@ -93,4 +93,6 @@ public interface IssuingCompanyRepository extends JpaRepository<IssuingCompany, 
     Optional<IssuingCompanyProjection> findProjectionByEstablishmentCode(
             @Param("establishmentCode") String establishmentCode
     );
+
+    Optional<IssuingCompany> findById(Integer id);
 }

@@ -1,28 +1,32 @@
 package com.api.supermercado.dtos;
 
-import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public record InvoiceRequestDto(
+public record InvoiceResponseDto(
+        Integer id,
 
+        // Foreign Keys
+        Integer issuingCompanyId,
+        Integer customerId,
 
-        @NotNull Integer issuingCompanyId,
-        @NotNull Integer customerId,
-        @NotNull Integer employeeId,
-        @NotNull @PastOrPresent Instant issueDate,
-        @NotBlank String accessKey,
-        @NotBlank String sequential,
-        @NotBlank String status,
+        // Main Invoice Data
+        Instant issueDate,
+        String accessKey,
+        String sequential,
+        String status,
 
-        @NotNull BigDecimal subtotalWithoutTax,
-        @NotNull BigDecimal totalVat,
-        @NotNull BigDecimal totalWithTax,
+        // Totals
+        BigDecimal subtotalWithoutTax,
+        BigDecimal totalVat,
+        BigDecimal totalWithTax,
 
+        // Documents
         String xmlDocument,
         String xmlSigned,
         byte[] ridePdf,
 
+        // SRI Authorization
         String authorizationNumber,
         Instant authorizationDate,
         String sriStatus,
@@ -32,7 +36,8 @@ public record InvoiceRequestDto(
         String sriAuthorizationNumber,
         Instant sriAuthorizationDate,
 
+        // Misc
         String originalData,
         Boolean isRegisteredInCashRegister
-
-) {}
+) {
+}

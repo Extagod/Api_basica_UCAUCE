@@ -1,6 +1,7 @@
 package com.api.supermercado.mappers;
 
 import com.api.supermercado.dtos.InvoiceRequestDto;
+import com.api.supermercado.dtos.InvoiceResponseDto;
 import com.api.supermercado.dtos.InvoiceFullResponseProjection;
 import com.api.supermercado.entities.Invoice;
 import org.mapstruct.*;
@@ -17,6 +18,5 @@ public interface InvoiceMapper {
     void updateEntity(@MappingTarget Invoice entity, InvoiceRequestDto dto);
 
     // ------------------ PROJECTION → RESPONSE DTO ------------------
-    InvoiceFullResponseProjection toResponse(InvoiceFullResponseProjection projection);
-
+    InvoiceResponseDto toResponse(InvoiceFullResponseProjection projection);
 }

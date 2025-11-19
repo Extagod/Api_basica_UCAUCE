@@ -20,7 +20,7 @@ public class Invoice {
     private Integer id;
 
     // ---------------------------------------------------------------------
-    // FOREIGN KEYS MANEJADAS SOLO COMO PK (sin relaciones JPA)
+    // FOREIGN KEYS
     // ---------------------------------------------------------------------
 
     @NotNull(message = "Issuing company is required")
@@ -31,60 +31,62 @@ public class Invoice {
     @Column(name = "customer_id", nullable = false)
     private Integer customerId;
 
-    @NotNull(message = "Creator user (employee) is required")
-    @Column(name = "creator_user_id", nullable = false)
-    private Integer creatorUserId;
-
+    @NotNull(message = "Employee is required")
+    @Column(name = "employee_id", nullable = false)
+    private Integer employeeId;
 
     // ---------------------------------------------------------------------
-    // DATOS PRINCIPALES DE LA FACTURA
+    // DATOS PRINCIPALES
     // ---------------------------------------------------------------------
 
     @NotNull(message = "Issue date is required")
-    @PastOrPresent(message = "Issue date cannot be in the future")
+    @PastOrPresent
     @Column(name = "issue_date", nullable = false)
     private Instant issueDate;
 
     @NotBlank(message = "Access key is required")
-    @Size(min = 10, max = 49, message = "Access key must have between 10 and 49 characters")
+    @Size(min = 10, max = 49)
     @Column(name = "access_key", nullable = false, length = 49, unique = true)
     private String accessKey;
 
     @NotBlank(message = "Sequential number is required")
-    @Size(min = 3, max = 20, message = "Sequential must be between 3 and 20 characters")
+    @Size(min = 3, max = 20)
     @Column(name = "sequential", nullable = false, length = 20)
     private String sequential;
+
+    @NotBlank(message = "Invoice number is required")
+    @Size(min = 15, max = 17)
+    @Column(name = "invoice_number", nullable = false, length = 20, unique = true)
+    private String invoiceNumber;
 
     @NotBlank(message = "Invoice status is required")
     @Column(name = "status", nullable = false, length = 20)
     private String status;
 
-
     // ---------------------------------------------------------------------
     // TOTALES
     // ---------------------------------------------------------------------
 
-    @NotNull(message = "Subtotal without VAT is required")
-    @DecimalMin(value = "0.00", message = "Subtotal cannot be negative")
-    @Digits(integer = 10, fraction = 2, message = "Invalid format for subtotal")
+    @NotNull
+    @DecimalMin("0.00")
+    @Digits(integer = 10, fraction = 2)
     @Column(name = "subtotal_without_tax", nullable = false, precision = 10, scale = 2)
     private BigDecimal subtotalWithoutTax;
 
-    @NotNull(message = "VAT total is required")
-    @DecimalMin(value = "0.00", message = "Total VAT cannot be negative")
-    @Digits(integer = 10, fraction = 2, message = "Invalid format for VAT")
+    @NotNull
+    @DecimalMin("0.00")
+    @Digits(integer = 10, fraction = 2)
     @Column(name = "total_vat", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalVat;
 
-    @NotNull(message = "Total with taxes is required")
-    @DecimalMin(value = "0.00", message = "Total cannot be negative")
-    @Digits(integer = 10, fraction = 2, message = "Invalid format for total")
+    @NotNull
+    @DecimalMin("0.00")
+    @Digits(integer = 10, fraction = 2)
     @Column(name = "total_with_tax", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalWithTax;
 
-
     // ---------------------------------------------------------------------
-    // DOCUMENTOS (XML, XML FIRMADO, RIDE PDF)
+    // DOCUMENTOS
     // ---------------------------------------------------------------------
 
     @Lob
@@ -99,9 +101,8 @@ public class Invoice {
     @Column(name = "ride_pdf")
     private byte[] ridePdf;
 
-
     // ---------------------------------------------------------------------
-    // DATOS DE AUTORIZACIÓN SRI
+    // SRI
     // ---------------------------------------------------------------------
 
     @Column(name = "authorization_number", length = 64)
@@ -129,9 +130,8 @@ public class Invoice {
     @Column(name = "sri_authorization_date")
     private Instant sriAuthorizationDate;
 
-
     // ---------------------------------------------------------------------
-    // OTROS DATOS
+    // OTROS
     // ---------------------------------------------------------------------
 
     @Lob

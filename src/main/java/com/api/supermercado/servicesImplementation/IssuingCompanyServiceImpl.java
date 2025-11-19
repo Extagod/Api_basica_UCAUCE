@@ -116,4 +116,12 @@ public class IssuingCompanyServiceImpl implements IssuingCompanyService {
 
         return repository.findProjectionByEstablishmentCode(existing.getEstablishmentCode());
     }
+
+    @Override
+    public Optional<IssuingCompany> findById(Integer id) {
+        return repository.findById(id);
+    }
+
+
+
 }
