@@ -20,23 +20,20 @@ public class Invoice {
     private Integer id;
 
     // ---------------------------------------------------------------------
-    // RELACIONES PRINCIPALES (EMPRESA EMISORA, CLIENTE, USUARIO CREADOR)
+    // FOREIGN KEYS MANEJADAS SOLO COMO PK (sin relaciones JPA)
     // ---------------------------------------------------------------------
 
     @NotNull(message = "Issuing company is required")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "issuing_company_id", nullable = false)
-    private IssuingCompany issuingCompany;
+    @Column(name = "issuing_company_id", nullable = false)
+    private Integer issuingCompanyId;
 
     @NotNull(message = "Customer is required")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    @Column(name = "customer_id", nullable = false)
+    private Integer customerId;
 
     @NotNull(message = "Creator user (employee) is required")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "creator_user_id", nullable = false)
-    private Employee creatorUser;
+    @Column(name = "creator_user_id", nullable = false)
+    private Integer creatorUserId;
 
 
     // ---------------------------------------------------------------------

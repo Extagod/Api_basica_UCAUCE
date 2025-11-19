@@ -5,8 +5,6 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 
@@ -21,18 +19,15 @@ public class InvoiceDetail {
     @Column(name = "invoice_detail_id", nullable = false)
     private Integer id;
 
-    // ---------------- INVOICE ----------------
+    // ---------------- INVOICE (FK DIRECTO) ----------------
     @NotNull(message = "Invoice reference is required")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "invoice_id", nullable = false)
-    private Invoice invoiceId;
+    @Column(name = "invoice_id", nullable = false)
+    private Integer invoiceId;
 
-    // ---------------- PRODUCT ----------------
+    // ---------------- PRODUCT (FK DIRECTO) ----------------
     @NotNull(message = "Product reference is required")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @Column(name = "product_id", nullable = false)
+    private Integer productId;
 
     // ---------------- QUANTITY ----------------
     @NotNull(message = "Quantity is required")
@@ -51,7 +46,6 @@ public class InvoiceDetail {
     // ---------------- SUBTOTAL ----------------
     @DecimalMin(value = "0.01", message = "Subtotal must be at least 0.01")
     @Digits(integer = 10, fraction = 2, message = "Subtotal format is invalid (max 10 digits, 2 decimals)")
-    @ColumnDefault("((quantity))")
     @Column(name = "subtotal", precision = 10, scale = 2)
     private BigDecimal subtotal;
 
