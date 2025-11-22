@@ -83,8 +83,6 @@ public class Person {
     )
     private List<Role> roles;
 
-
-
     // Data Persist
     @NotNull(message = "It must be specified whether the user is active or not")
     @Column(name = "is_active")

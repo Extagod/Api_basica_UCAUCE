@@ -44,6 +44,8 @@ public class Invoice {
     @Column(name = "issue_date", nullable = false)
     private Instant issueDate;
 
+
+    //Ya creamos el Acces Key
     @NotBlank(message = "Access key is required")
     @Size(min = 10, max = 49)
     @Column(name = "access_key", nullable = false, length = 49, unique = true)

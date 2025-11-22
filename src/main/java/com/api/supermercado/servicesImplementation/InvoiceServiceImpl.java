@@ -1,8 +1,7 @@
 package com.api.supermercado.servicesImplementation;
 
-import com.api.supermercado.dtos.AccessKeyDTO;
-import com.api.supermercado.dtos.InvoiceRequestDto;
-import com.api.supermercado.dtos.InvoiceResponseDto;
+import com.api.supermercado.dtos.*;
+import com.api.supermercado.entities.Customer;
 import com.api.supermercado.entities.Invoice;
 import com.api.supermercado.entities.IssuingCompany;
 import com.api.supermercado.exceptions.InvoiceException;
@@ -61,23 +60,22 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         Invoice invoice = mapper.toEntity(request);
 
-        // 1️⃣ Find Issuing Company
+        // 1️⃣ Get Issuing Company
         IssuingCompany company = issuingCompanyService
                 .findById(invoice.getIssuingCompanyId())
                 .orElseThrow(() ->
                         new InvoiceException(InvoiceExceptions.INVALID_ISSUING_COMPANY_ID)
                 );
 
-        // 2️⃣ Generate Sequential
+        // 2️⃣ Sequential
         String sequential = generateNextSequential(company.getId());
         invoice.setSequential(sequential);
 
-// 2.1️⃣ Generate Invoice Number (000-000-000000001)
+        // 3️⃣ Invoice Number
         String invoiceNumber = generateInvoiceNumber(company, sequential);
         invoice.setInvoiceNumber(invoiceNumber);
 
-
-        // 3️⃣ Build AccessKey DTO
+        // 4️⃣ Access Key
         AccessKeyDTO accessKeyDTO = new AccessKeyDTO(
                 LocalDate.now(),
                 "01",
@@ -89,18 +87,24 @@ public class InvoiceServiceImpl implements InvoiceService {
                 "1"
         );
 
-        // 4️⃣ Generate Access Key
         String accessKey = generateAccessKey(accessKeyDTO);
         invoice.setAccessKey(accessKey);
 
-        // 5️⃣ Set defaults
+        // 5️⃣ Tax Info DTO (internal)
+        TaxInfoDTO taxInfo = new TaxInfoDTO(
+                company.getRuc(),
+                sequential,
+                accessKey
+        );
+
+        // 6️⃣ Set defaults
         invoice.setIssueDate(Instant.now());
         invoice.setStatus("PENDING");
 
-        // 6️⃣ Save Invoice
+        // 7️⃣ Save
         invoiceRepository.save(invoice);
 
-        // 7️⃣ Return projection as Response DTO
+        // 8️⃣ Return response
         return mapper.toResponse(
                 invoiceRepository.findByIdProjection(invoice.getId())
         );
@@ -126,6 +130,20 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
 
         return mapper.toResponse(projection);
+    }
+
+    @Override
+    public InvoiceInfoDTO buildInvoiceInfo(Invoice invoice, Customer customer) {
+        String fullName = customer.getFirstName() + " " + customer.getLastName();
+
+        return new InvoiceInfoDTO(
+                invoice.getIssueDate().toString(),
+                customer.getIdIdentificationType().toString(),
+                customer.getIdentificationNumber(),
+                fullName,
+                invoice.getSubtotalWithoutTax().toString(),
+                invoice.getTotalWithTax().toString()
+        );
     }
 
 
