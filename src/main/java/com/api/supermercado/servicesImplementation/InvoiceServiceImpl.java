@@ -4,17 +4,22 @@ import com.api.supermercado.dtos.*;
 import com.api.supermercado.entities.Customer;
 import com.api.supermercado.entities.Invoice;
 import com.api.supermercado.entities.IssuingCompany;
+import com.api.supermercado.entities.Product;
 import com.api.supermercado.exceptions.InvoiceException;
 import com.api.supermercado.exceptions.InvoiceExceptions;
 import com.api.supermercado.mappers.InvoiceMapper;
+import com.api.supermercado.repositories.CustomerRepository;
+import com.api.supermercado.repositories.InvoiceDetailRepository;
 import com.api.supermercado.repositories.InvoiceRepository;
 import com.api.supermercado.services.InvoiceService;
 import com.api.supermercado.services.IssuingCompanyService;
+import com.api.supermercado.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +29,9 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final InvoiceMapper mapper;
     private final IssuingCompanyService issuingCompanyService;
     private final InvoiceRepository invoiceRepository; // <-- Necesario para guardar
+    private final ProductService productService;
+    private final InvoiceDetailRepository invoiceDetailRepository;
+    private final CustomerRepository customerRepository;
 
     // =========================================================
     //            GENERATE ACCESS KEY (SRI)
@@ -145,6 +153,53 @@ public class InvoiceServiceImpl implements InvoiceService {
                 invoice.getTotalWithTax().toString()
         );
     }
+
+
+    @Override
+    public MinimumInvoiceRequestDto buildInvoiceRequest(Integer invoiceId) {
+
+        // 1️⃣ Obtener invoice completa
+        Invoice invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new InvoiceException(InvoiceExceptions.INVOICE_NOT_FOUND));
+
+        // 2️⃣ Traer cliente
+        Customer customer = customerRepository.findById(invoice.getCustomerId())
+                .orElseThrow(() -> new InvoiceException(InvoiceExceptions.CUSTOMER_NOT_FOUND));
+
+        // 3️⃣ Traer detalles (productos en la factura)
+        var invoiceDetails = invoiceDetailRepository.findByInvoiceId(invoiceId);
+
+        if (invoiceDetails.isEmpty()) {
+            throw new InvoiceException(InvoiceExceptions.EMPTY_INVOICE_DETAIL);
+        }
+
+        // 4️⃣ Convertir invoiceDetails → ProductDetailDto usando ProductService
+        List<ProductDetailDto> detalles = invoiceDetails.stream()
+                .map(det -> {
+                    Product product = productService.findById(det.getProductId());
+                    return productService.buildProductDetail(product, det.getQuantity());
+                })
+                .toList();
+
+        // 5️⃣ Construir infoTributaria (lo que pide el SRI)
+        TaxInfoDTO taxInfoDTO = new TaxInfoDTO(
+                invoice.getIssuingCompanyId().toString(),  // ❗ debes reemplazar esto cuando tengas el RUC REAL
+                invoice.getSequential(),
+                invoice.getAccessKey()
+        );
+
+        // 6️⃣ Construir infoFactura
+        InvoiceInfoDTO invoiceInfoDTO = buildInvoiceInfo(invoice, customer);
+
+        // 7️⃣ Retornar estructura final EXACTA SRI
+        return new MinimumInvoiceRequestDto(
+                taxInfoDTO,
+                invoiceInfoDTO,
+                detalles
+        );
+    }
+
+
 
 
     // =========================================================

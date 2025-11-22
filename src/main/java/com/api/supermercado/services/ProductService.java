@@ -1,5 +1,6 @@
 package com.api.supermercado.services;
 
+import com.api.supermercado.dtos.ProductDetailDto;
 import com.api.supermercado.dtos.ProductPageResponseDto;
 import com.api.supermercado.dtos.ProductRequestDto;
 import com.api.supermercado.entities.Product;
@@ -16,4 +17,7 @@ public interface ProductService {
     void deleteProduct(String barCode);
     List<ProductPageResponseDto> findProductsDisabled(Integer lastId, Integer size);
     Optional<Product> UpdateProduct(String barCode, ProductRequestDto dto);
+    ProductDetailDto buildProductDetail(Product product, Integer quantity);
+    Product findById(Integer id);
+
 }

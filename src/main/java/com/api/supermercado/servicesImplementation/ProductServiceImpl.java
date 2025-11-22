@@ -1,7 +1,9 @@
 package com.api.supermercado.servicesImplementation;
 
+import com.api.supermercado.dtos.ProductDetailDto;
 import com.api.supermercado.dtos.ProductPageResponseDto;
 import com.api.supermercado.dtos.ProductRequestDto;
+import com.api.supermercado.dtos.TaxDTO;
 import com.api.supermercado.entities.Product;
 import com.api.supermercado.exceptions.ProductException;
 import com.api.supermercado.exceptions.ProductExceptions;
@@ -12,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,6 +103,49 @@ public class ProductServiceImpl implements ProductService {
         Product updated = productRepository.save(existingProduct);
 
         return Optional.of(updated);
+    }
+
+    @Override
+    public ProductDetailDto buildProductDetail(Product product, Integer quantity) {
+
+        String precioUnitario = product.getPriceProduct().toString();
+        String precioSinImpuesto = product.getPriceProduct()
+                .multiply(BigDecimal.valueOf(quantity))
+                .toString();
+
+        // IVA 12% ó 0
+        String ivaTarifa = product.getHasTax() ? "12" : "0";
+        BigDecimal ivaValor = product.getHasTax()
+                ? product.getPriceProduct().multiply(BigDecimal.valueOf(quantity)).multiply(BigDecimal.valueOf(0.12))
+                : BigDecimal.ZERO;
+
+        TaxDTO impuesto = new TaxDTO(
+                "2",           // código IVA
+                product.getHasTax() ? "2" : "0",  // porcentaje
+                ivaTarifa,
+                precioSinImpuesto,
+                ivaValor.toString()
+        );
+
+        return new ProductDetailDto(
+                product.getBarCode(),
+                product.getNameProduct(),
+                quantity.toString(),
+                precioUnitario,
+                precioSinImpuesto,
+                List.of(impuesto)
+        );
+    }
+
+    @Override
+    public Product findById(Integer id) {
+
+        if (id == null || id <= 0) {
+            throw new ProductException(ProductExceptions.INVALID_PRODUCT_DATA);
+        }
+
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductException(ProductExceptions.PRODUCT_NOT_FOUND));
     }
 
 
