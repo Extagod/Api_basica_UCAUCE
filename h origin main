@@ -1,0 +1,34 @@
+[33m34789b2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m - Replaced projection-based invoice queries with full entity retrieval to ensure   complete and consistent mapping of all invoice fields. - Added native query findLastInvoiceByStatusEntity() returning Optional<Invoice>   for safer sequential generation and improved reliability. - Updated generateSequential() to use CompletableFuture and entity-based lookups   for both AUTORIZADO and NO_ENVIADA SRI statuses. - Implemented 1:1 translation of the original TypeScript sequential generator,   preserving behavior for initial values and zero-padding to 9 digits. - Removed dependency on partial projections to avoid potential unmapped fields   or inconsistencies in sequential logic. - Ensured clean separation of concerns and improved maintainability of invoice   sequential generation workflow.
+[33m36dd94c[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m - Removed duplicated and non-service responsibilities from InvoiceServiceImpl. - Extracted SRI access key generation and modulo 11 check digit calculation   into a new utility class: AccessKeyUtils. - Replaced internal service methods with static utility calls to ensure   proper modularization and reusability. - Updated createInvoice() to use AccessKeyUtils.generarClaveAcceso(). - Deleted old methods generateAccessKey() and getCheckDigit() from service   to maintain clean separation of concerns and improve maintainability.
+[33me6d4e76[m feat(invoice): implement MinimumInvoiceRequestDto builder with product details and tax info
+[33m3fdcd41[m feat(invoice): implement TaxInfoDTO, InvoiceInfoDTO and SRI-ready data builders
+[33m5db4591[m feat(invoice): refactor invoice entity, DTOs and workflow for full SRI compliance
+[33mb7f05f9[m feat(invoice): refactor invoice architecture to PK-only model, add DTOs, projections and mapper
+[33m30bba89[m feat(payment-method-module): add complete PaymentMethod entity with enums, validations, JPA mapping, and enterprise-grade billing structure
+[33m59932f3[m feat(invoice-module): enhance Invoice and InvoiceDetail entities with full tax structure, validations, SRI fields, and enterprise-ready design
+[33mf76e726[m feat(issuing-company-module): complete migration from Branch module to IssuingCompany module with full projections, DTOs, mapper, service, controller, and repository refactor
+[33me8bf1f6[m feat(employee-customer): add identification search endpoints + update and logical erase for Employee
+[33m2e9ff47[m feat(customer): implement update endpoint and logical erase with clean architecture
+[33mbef9133[m refactor(person-module): modularize Customer and Employee logic + unified DTO
+[33m4988504[m feat(api): separate Customer and Employee endpoints + improve module modularization
+[33m7e074d8[m git add . git commit -m "feat(branch): add logical delete, update endpoint and mapper update support
+[33m12f5e47[m git add . git commit -m "feat(branch): implement full branch management module with native queries and DTO mapping
+[33m4ed9079[m git add . git commit -m "fix(pom): resolve dependency conflicts and remove unused SCM metadata
+[33m66fb256[m fix(security): resolve authentication bug due to invalid GrantedAuthority mapping
+[33m0e57299[m feat(auth): implement multi-role registration, login improvements & debugging logs
+[33m457a93b[m feat(auth): implement customer & employee registration with separated DTOs, mappers and endpoints
+[33maa4885a[m fix(auth): correct role handling during JWT generation
+[33m82fe27e[m feat(security): implement robust JWT-based RBAC, route protection, and mapper fixes
+[33m09ca0c8[m correct format
+[33m4bcf5e9[m feat(person): add service implementation and native query to retrieve user by identification number
+[33m4133765[m fix(person-service): resolved merge conflict and restored person lookup implementation
+[33mf6a48a2[m feat: sync local changes with remote repository
+[33m080a1e0[m feat(person): add service implementation and native query to retrieve user by identification number
+[33m0e5b3b9[m feat(security): Implementación completa de seguridad con JWT y filtros personalizados
+[33m2252e3d[m feat(security): implementación completa de autenticación JWT, roles y protección de rutas
+[33m783acce[m refactor(security): replace lambda expressions with method references
+[33m27cc849[m feat(supplier): add full supplier creation and update flow with validations and exception handling - Implemented SupplierRequestDto as a record with proper JSON mapping and input validation. - Added new SupplierExceptions enum and SupplierException class for consistent domain-level error reporting. - Improved createSupplier() method with input validation, duplicate detection and normalized input handling. - Implemented updateSupplier() returning Optional<Supplier> and mapped controller response accordingly. - Enhanced getSupplier() with optimized database lookup, defensive input validation and unified error propagation. - Added @Valid to controller request handling for automatic Bean Validation integration. - Standardized naming conventions (isActive, normalized taxId). - Consolidated database exception handling under DATABASE_ERROR enum for uniform error responses.
+[33m44e746e[m feat(supplier): implementación completa de endpoints para gestión y consulta paginada de proveedores
+[33m17d3036[m feat: implementación de gestión completa para Categorías y Productos
+[33maee1fc2[m feat(category): implement Category module with security dev mode and pagination
+[33m6d5a164[m[33m ([m[1;31morigin/master[m[33m)[m feat: add auditing support, validations and pagination improvements for Product, Supplier and Person management
