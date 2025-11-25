@@ -1,0 +1,53 @@
+package com.api.supermercado.utils;
+
+import com.api.supermercado.dtos.AccessKeyDTO;
+
+import java.time.LocalDate;
+
+public class AccessKeyUtils {
+
+    /**
+     * Calcula el dígito verificador usando algoritmo Módulo 11 (SRI)
+     */
+    public static String obtenerDigitoVerificador(String clave) {
+        int[] coef = {2, 3, 4, 5, 6, 7};
+        int suma = 0;
+
+        for (int i = clave.length() - 1, j = 0; i >= 0; i--, j++) {
+            int digito = Character.getNumericValue(clave.charAt(i));
+            suma += digito * coef[j % coef.length];
+        }
+
+        int mod = 11 - (suma % 11);
+
+        if (mod == 11) return "0";
+        if (mod == 10) return "1";
+        return String.valueOf(mod);
+    }
+
+    /**
+     * Genera la clave de acceso según especificación del SRI
+     */
+    public static String generarClaveAcceso(AccessKeyDTO dto) {
+
+        LocalDate fecha = dto.Date();
+        String dd = String.format("%02d", fecha.getDayOfMonth());
+        String mm = String.format("%02d", fecha.getMonthValue());
+        String yyyy = String.valueOf(fecha.getYear());
+
+        String base = dd
+                + mm
+                + yyyy
+                + dto.ReceiptType()
+                + dto.TaxpayerID()
+                + dto.Environment()
+                + dto.Series()
+                + dto.Sequential()
+                + dto.NumericCode()
+                + dto.IssueType();
+
+        String verificador = obtenerDigitoVerificador(base);
+
+        return base + verificador;
+    }
+}
