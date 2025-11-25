@@ -24,7 +24,7 @@ public class IssuingCompany {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "issuing_company_id", nullable = false)
-    private Integer id;
+    private Integer idIssuingCompany;
 
     // ===================== RUC =====================
     @NotBlank(message = "RUC is required")
