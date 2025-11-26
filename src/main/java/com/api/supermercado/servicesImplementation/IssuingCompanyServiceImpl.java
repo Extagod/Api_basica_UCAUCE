@@ -58,7 +58,7 @@ public class IssuingCompanyServiceImpl implements IssuingCompanyService {
         }
 
         // Check duplicate RUC
-        if (repository.findByRuc(dto.ruc()).isPresent()) {
+        if (repository.findByRucTrimmed(dto.ruc()).isPresent()) {
             throw new IssuingCompanyException(IssuingCompanyExceptions.DUPLICATE_RUC);
         }
 
@@ -106,7 +106,7 @@ public class IssuingCompanyServiceImpl implements IssuingCompanyService {
 
         // Validate unique RUC
         if (!existing.getRuc().equalsIgnoreCase(dto.ruc())
-                && repository.findByRuc(dto.ruc()).isPresent()) {
+                && repository.findByRucTrimmed(dto.ruc()).isPresent()) {
             throw new IssuingCompanyException(IssuingCompanyExceptions.DUPLICATE_RUC);
         }
 

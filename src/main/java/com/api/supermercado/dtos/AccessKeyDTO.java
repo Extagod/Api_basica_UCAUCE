@@ -1,17 +1,17 @@
 package com.api.supermercado.dtos;
 
+import com.api.supermercado.enums.ReceiptTypeEnum;
 import lombok.Data;
 import lombok.Getter;
 
 import java.time.LocalDate;
 
 public record AccessKeyDTO(
-        LocalDate Date,
-        String ReceiptType,
-        String TaxpayerID,
-        String Environment,
-        String Series,
-        String Sequential,
-        String NumericCode,
-        String IssueType) {
+        ReceiptTypeEnum documentType,
+        String ruc,              // RUC del emisor
+        String environment,      // 1 prod | 2 pruebas
+        String sequential,       // 000000123
+        String numericCode,      // valor aleatorio
+        String emissionType      // 1 normal
+) {
 }

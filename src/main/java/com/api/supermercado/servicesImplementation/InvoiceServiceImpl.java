@@ -47,7 +47,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
             // 1️⃣ Buscar empresa emisora
             IssuingCompany issuingCompany = issuingCompanyRepository
-                    .findByRuc(ruc)
+                    .findByRucTrimmed(ruc)
                     .orElseThrow(() ->
                             new IssuingCompanyException(IssuingCompanyExceptions.COMPANY_NOT_FOUND)
                     );
@@ -83,4 +83,15 @@ public class InvoiceServiceImpl implements InvoiceService {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<IssuingCompany> getIssuingCompanyByRuc(String ruc) {
+        return CompletableFuture.supplyAsync(() ->
+                issuingCompanyRepository.findByRucTrimmed(ruc)
+                        .orElseThrow(() ->
+                                new IssuingCompanyException(IssuingCompanyExceptions.COMPANY_NOT_FOUND)
+                        )
+        );
+    }
+
 }

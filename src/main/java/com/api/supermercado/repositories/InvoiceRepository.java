@@ -2,6 +2,7 @@ package com.api.supermercado.repositories;
 
 import com.api.supermercado.dtos.InvoiceFullResponseProjection;
 import com.api.supermercado.entities.Invoice;
+import com.api.supermercado.entities.IssuingCompany;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,9 +35,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
             @Param("companyId") Integer companyId,
             @Param("status") String status
     );
-
-
-
 
     @Query(value = """
     SELECT

@@ -1,10 +1,13 @@
 package com.api.supermercado.utils;
 
 import com.api.supermercado.dtos.AccessKeyDTO;
+import com.api.supermercado.entities.IssuingCompany;
 
 import java.time.LocalDate;
 
 public class AccessKeyUtils {
+
+
 
     /**
      * Calcula el dígito verificador usando algoritmo Módulo 11 (SRI)
@@ -28,26 +31,31 @@ public class AccessKeyUtils {
     /**
      * Genera la clave de acceso según especificación del SRI
      */
-    public static String generarClaveAcceso(AccessKeyDTO dto) {
+    public static String generarClaveAcceso(AccessKeyDTO dto, IssuingCompany issuingCompany) {
 
-        LocalDate fecha = dto.Date();
+        // 1️⃣ Fecha actual del sistema (SIEMPRE del backend)
+        LocalDate fecha = LocalDate.now();
         String dd = String.format("%02d", fecha.getDayOfMonth());
         String mm = String.format("%02d", fecha.getMonthValue());
         String yyyy = String.valueOf(fecha.getYear());
 
-        String base = dd
-                + mm
-                + yyyy
-                + dto.ReceiptType()
-                + dto.TaxpayerID()
-                + dto.Environment()
-                + dto.Series()
-                + dto.Sequential()
-                + dto.NumericCode()
-                + dto.IssueType();
+        // 2️⃣ Construcción de la clave base en el ORDEN exacto del SRI
+        String base =
+                dd +
+                        mm +
+                        yyyy +
+                        dto.documentType().getCode() +   // 01
+                        dto.ruc() +            // RUC del emisor
+                        dto.environment() +    // ambiente
+                        issuingCompany.getSeries() +// 001001
+                        dto.sequential() +     // 000000123
+                        dto.numericCode() +    // aleatorio
+                        dto.emissionType();    // 1
 
+        // 3️⃣ Calcular dígito verificador (Módulo 11)
         String verificador = obtenerDigitoVerificador(base);
 
+        // 4️⃣ Retornar clave completa
         return base + verificador;
     }
 }

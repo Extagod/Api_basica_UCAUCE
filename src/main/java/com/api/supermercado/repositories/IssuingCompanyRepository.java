@@ -70,7 +70,14 @@ public interface IssuingCompanyRepository extends JpaRepository<IssuingCompany, 
     boolean existsByEstablishmentCode(String establishmentCode);
 
     // ---------------- FIND BY RUC (ENTITY) ----------------
-    Optional<IssuingCompany> findByRuc(String ruc);
+    @Query(value = """
+    SELECT *
+    FROM issuing_company
+    WHERE TRIM(ruc) = TRIM(:ruc)
+    LIMIT 1
+""", nativeQuery = true)
+    Optional<IssuingCompany> findByRucTrimmed(@Param("ruc") String ruc);
+
 
     // ---------------- FIND PROJECTION BY ESTABLISHMENT CODE ----------------
     @Query(value = """
