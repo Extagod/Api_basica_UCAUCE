@@ -4,6 +4,7 @@ import com.api.supermercado.enums.RoleEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -14,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 
+@Getter
 @Service
 public class JwtService {
 
@@ -72,4 +74,9 @@ public class JwtService {
                 .signWith(getSigningKey())
                 .compact();
     }
+
+    public Instant extractExpiration(String token) {
+        return extractClaim(token, claims -> claims.getExpiration().toInstant());
+    }
+
 }

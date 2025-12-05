@@ -14,13 +14,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5174")
-
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 
     private final PersonRepository personRepository;
@@ -89,15 +89,16 @@ public class AuthController {
 
         // 4️⃣ Generar token
         String token = jwtService.generateToken(request.username(), roleEnums);
+        Instant expiration = jwtService.extractExpiration(token);
         System.out.println("🪪 TOKEN GENERADO: " + token);
 
         // 5️⃣ Respuesta dinamica por rol
         if (roleEnums.contains(RoleEnum.ADMIN)) {
-            return ResponseEntity.ok(new AuthResponse("successful login, Welcome Admin User", token));
+            return ResponseEntity.ok(new AuthResponse("successful login, Welcome Admin User", token, expiration  ));
         }
 
         if (roleEnums.contains(RoleEnum.USER)) {
-            return ResponseEntity.ok(new AuthResponse("successful login, Welcome User", token));
+            return ResponseEntity.ok(new AuthResponse("successful login, Welcome User", token, expiration));
         }
 
         throw new PersonException(PersonExceptions.THE_USER_IS_NOT_AN_ADMIN);
@@ -105,6 +106,6 @@ public class AuthController {
 
     // Records
     public record LoginRequest(String username, String password) {}
-    public record AuthResponse(String message, String token) {}
+    public record AuthResponse(String message, String token, Instant tokenExpirationTime) {}
 
 }
