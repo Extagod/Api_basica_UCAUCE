@@ -23,6 +23,7 @@ public class InvoiceController {
 
     private final InvoiceService invoiceService;
 
+
     @GetMapping("/preview")
     public CompletableFuture<ResponseEntity<AccessKeyPreviewResponse>> preview(
             @RequestParam String ruc

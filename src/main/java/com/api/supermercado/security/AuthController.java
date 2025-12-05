@@ -19,6 +19,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5174")
+
 public class AuthController {
 
     private final PersonRepository personRepository;
