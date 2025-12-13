@@ -22,7 +22,7 @@ public interface PersonRequestMapper {
     @Mapping(source = "firstName", target = "firstName")
     @Mapping(source = "lastName", target = "lastName")
     @Mapping(source = "genderId", target = "genderId")
-    @Mapping(source = "birthDate", target = "birthDate")
+
     @Mapping(source = "address", target = "address")
     @Mapping(source = "phone", target = "phone")
     @Mapping(source = "email", target = "email")
@@ -44,7 +44,7 @@ public interface PersonRequestMapper {
     @Mapping(source = "firstName", target = "firstName")
     @Mapping(source = "lastName", target = "lastName")
     @Mapping(source = "genderId", target = "genderId")
-    @Mapping(source = "birthDate", target = "birthDate")
+
     @Mapping(source = "address", target = "address")
     @Mapping(source = "phone", target = "phone")
     @Mapping(source = "email", target = "email")

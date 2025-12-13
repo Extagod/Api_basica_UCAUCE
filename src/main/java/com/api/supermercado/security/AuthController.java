@@ -2,6 +2,7 @@ package com.api.supermercado.security;
 
 import com.api.supermercado.dtos.CustomerRegisterDto;
 import com.api.supermercado.dtos.EmployeeRegisterDto;
+import com.api.supermercado.dtos.PublicRequestRegisterDto;
 import com.api.supermercado.enums.RoleEnum;
 import com.api.supermercado.exceptions.PersonException;
 import com.api.supermercado.exceptions.PersonExceptions;
@@ -40,6 +41,19 @@ public class AuthController {
         }
 
         authService.registerUser(request);
+        return ResponseEntity.ok("User registered successfully");
+    }
+
+
+    @PostMapping("/registerCustomerPublic")
+    public ResponseEntity<?> registerPublicCustomer(@RequestBody PublicRequestRegisterDto request) {
+
+        if (request == null) {
+            return ResponseEntity.badRequest()
+                    .body(new PersonException(PersonExceptions.INVALID_PERSON_DATA));
+        }
+
+        authService.registerPublicCustomer(request);
         return ResponseEntity.ok("User registered successfully");
     }
 
@@ -94,18 +108,33 @@ public class AuthController {
 
         // 5️⃣ Respuesta dinamica por rol
         if (roleEnums.contains(RoleEnum.ADMIN)) {
-            return ResponseEntity.ok(new AuthResponse("successful login, Welcome Admin User", token, expiration  ));
+            return ResponseEntity.ok(
+                    new AuthResponse(
+                            "successful login, Welcome Admin User",
+                            token,
+                            expiration,
+                            roleEnums   // ⬅️ agregados
+                    )
+            );
         }
 
         if (roleEnums.contains(RoleEnum.USER)) {
-            return ResponseEntity.ok(new AuthResponse("successful login, Welcome User", token, expiration));
+            return ResponseEntity.ok(
+                    new AuthResponse(
+                            "successful login, Welcome User",
+                            token,
+                            expiration,
+                            roleEnums   // ⬅️ agregados
+                    )
+            );
         }
+
 
         throw new PersonException(PersonExceptions.THE_USER_IS_NOT_AN_ADMIN);
     }
 
     // Records
     public record LoginRequest(String username, String password) {}
-    public record AuthResponse(String message, String token, Instant tokenExpirationTime) {}
+    public record AuthResponse(String message, String token, Instant tokenExpirationTime, List<RoleEnum> roleEnums) {}
 
 }

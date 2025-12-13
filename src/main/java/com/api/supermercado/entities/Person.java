@@ -50,16 +50,10 @@ public class Person {
     private Integer genderId;
 
 
-
-    @Past(message = "Birth date must be in the past.")
-    @Column(name = "birth_date")
-    private LocalDate birthDate;
-
     @Size(max = 200, message = "Address cannot exceed 200 characters.")
     @Column(name = "address", length = 200)
     private String address;
-
-    @Size(max = 20, message = "Phone number cannot exceed 20 characters.")
+    @Size(max = 20, message = "P    hone number cannot exceed 20 characters.")
     @Column(name = "phone", length = 20)
     private String phone;
 

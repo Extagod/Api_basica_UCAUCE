@@ -21,7 +21,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -37,6 +41,7 @@ public class SecurityConfig {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // <<<<<<<<<< AÑADIR ESTO
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/auth/**",
@@ -45,18 +50,14 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // 🔥 SOLO ADMIN
                         .requestMatchers("/api/categories/**").hasRole("ADMIN")
                         .requestMatchers("/api/persons/**").hasRole("ADMIN")
                         .requestMatchers("/api/products/**").hasRole("ADMIN")
                         .requestMatchers("/api/suppliers/**").hasRole("ADMIN")
                         .requestMatchers("/api/branches/**").hasRole("ADMIN")
+                        .requestMatchers("/api/invoices/**").hasRole("ADMIN")
 
-                        .requestMatchers("/api/invoices**").hasRole("ADMIN")
-
-                        // 🔥 CUALQUIER USUARIO AUTENTICADO
                         .requestMatchers("/api/**").authenticated()
-
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
@@ -64,6 +65,7 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
@@ -110,4 +112,20 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setExposedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
 }
+

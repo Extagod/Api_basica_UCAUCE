@@ -10,7 +10,6 @@ public record CustomerRegisterDto(
         Integer idIdentificationType,
         String identificationNumber,
         Integer genderId,
-        LocalDate birthDate,
         String address,
         String phone,
         String email,

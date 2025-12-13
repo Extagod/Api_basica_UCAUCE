@@ -2,9 +2,11 @@ package com.api.supermercado.security;
 
 import com.api.supermercado.dtos.CustomerRegisterDto;
 import com.api.supermercado.dtos.EmployeeRegisterDto;
+import com.api.supermercado.dtos.PublicRequestRegisterDto;
 import com.api.supermercado.entities.Customer;
 import com.api.supermercado.entities.Employee;
 import com.api.supermercado.entities.Role;
+import com.api.supermercado.enums.RoleEnum;
 import com.api.supermercado.mappers.CustomerMapper;
 import com.api.supermercado.mappers.EmployeeMapper;
 import com.api.supermercado.repositories.CustomerRepository;
@@ -62,14 +64,43 @@ public class AuthService {
         System.out.println("🔐 Password codificado: " + customer.getPassword());
 
         customer.setIs_active(true);
-        System.out.println("🟢 is_active = true");
 
-        customer.setRoles(roles);
+        System.out.println("🟢 is_active = true");
 
         System.out.println("💾 Guardando CUSTOMER en BD...");
         customerRepository.save(customer);
 
         System.out.println("🎉 CUSTOMER REGISTRADO EXITOSAMENTE");
+    }
+
+
+    public void registerPublicCustomer(PublicRequestRegisterDto request) {
+
+        Customer customer = new Customer();
+
+        customer.setFirstName(request.firstName());
+        customer.setLastName(request.lastName());
+        customer.setUsername(request.username());
+        customer.setEmail(request.email());
+        customer.setAddress(request.address());
+        customer.setPhone(request.phone());
+        customer.setGenderId(request.genderId());
+        customer.setIdentificationNumber(request.identificationNumber());
+        customer.setIdIdentificationType(request.idIdentificationType());
+
+        // 🔐 Password
+        customer.setPassword(passwordEncoder.encode(request.password()));
+
+        // 🔒 Backend decide todo lo sensible
+        customer.setIs_active(true);
+        customer.setRoles(
+                List.of(
+                        roleRepository.findByDescription("USER")
+                                .orElseThrow()
+                )
+        );
+
+        customerRepository.save(customer);
     }
 
 

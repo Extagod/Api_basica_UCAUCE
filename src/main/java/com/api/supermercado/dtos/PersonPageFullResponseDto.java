@@ -23,7 +23,6 @@ public interface PersonPageFullResponseDto {
     String getLastName();
     Integer getGenderId();
     String getGenderDescription();
-    LocalDate getBirthDate();
     String getAddress();
     String getPhone();
     String getEmail();
