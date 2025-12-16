@@ -22,7 +22,8 @@ public enum PersonExceptions {
     INVALID_GENDER_ID("INVALID_GENDER_ID", "The provided gender ID is invalid"),
 
     DATABASE_ERROR("DATABASE_ERROR", "An unexpected database error occurred"),
-    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "Unexpected server error occurred");
+    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "Unexpected server error occurred"),
+    INVALID_JWT_TOKEN("INVALID_JWT_TOKEN", "Invalid JWT token");
 
     private final String code;
     private final String message;

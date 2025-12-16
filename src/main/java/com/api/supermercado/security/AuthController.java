@@ -3,6 +3,7 @@ package com.api.supermercado.security;
 import com.api.supermercado.dtos.CustomerRegisterDto;
 import com.api.supermercado.dtos.EmployeeRegisterDto;
 import com.api.supermercado.dtos.PublicRequestRegisterDto;
+import com.api.supermercado.dtos.RefreshTokenRequest;
 import com.api.supermercado.enums.RoleEnum;
 import com.api.supermercado.exceptions.PersonException;
 import com.api.supermercado.exceptions.PersonExceptions;
@@ -132,6 +133,49 @@ public class AuthController {
 
         throw new PersonException(PersonExceptions.THE_USER_IS_NOT_AN_ADMIN);
     }
+
+    // ------------------------ REFRESH TOKEN ----------------------
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
+
+        if (request == null || request.token() == null) {
+            return ResponseEntity.badRequest()
+                    .body(new PersonException(PersonExceptions.INVALID_PERSON_DATA));
+        }
+
+        try {
+            // 1️⃣ Extraer username del token
+            String username = jwtService.extractUsername(request.token());
+
+            // 2️⃣ Buscar usuario en BD
+            var user = personRepository.findByUsername(username)
+                    .orElseThrow(() -> new PersonException(PersonExceptions.PERSON_NOT_FOUND));
+
+            // 3️⃣ Convertir roles (BD → Enum)
+            List<RoleEnum> roleEnums = user.getRoles().stream()
+                    .map(r -> RoleEnum.fromId(r.getRoleId()))
+                    .toList();
+
+            // 4️⃣ Generar nuevo token
+            String newToken = jwtService.generateToken(username, roleEnums);
+            Instant expiration = jwtService.extractExpiration(newToken);
+
+            // 5️⃣ Responder
+            return ResponseEntity.ok(
+                    new AuthResponse(
+                            "token refreshed successfully",
+                            newToken,
+                            expiration,
+                            roleEnums
+                    )
+            );
+
+        } catch (Exception e) {
+            return ResponseEntity.status(401)
+                    .body(new PersonException(PersonExceptions.INVALID_JWT_TOKEN));
+        }
+    }
+
 
     // Records
     public record LoginRequest(String username, String password) {}
